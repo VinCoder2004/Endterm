@@ -1651,53 +1651,42 @@ const sizes = ['XS','S','M','L','XL','XXL'];
 // ─────────────────────────────────────────
 // FETCH PRODUCTS FROM BACKEND
 // ─────────────────────────────────────────
-// --- 1. SMART IMAGE CLEANER ---
-const getCleanUrl = (imgString) => {
-    if (imgString && imgString.includes('<img src=')) {
-        const match = imgString.match(/src="([^"]+)"/);
-        return match ? match[1] : imgString;
-    }
-    return imgString;
-};
+async function fetchProducts(filter = 'All', sort = 'featured') {
+  const grid = document.getElementById('productsGrid');
+  grid.style.opacity = '0';
 
-// --- 2. UPDATED FETCH FUNCTION ---
-async function fetchProducts(team = '') {
-    try {
-        // Change your URL to be relative for Vercel
-        const API_URL = '/api/products';
-        const url = team ? `${API_URL}?team=${team}` : API_URL;
-        
-        const res = await fetch(url);
-        const result = await res.json();
-        
-        // Make sure this ID matches your products container (usually 'products-grid')
-        const productsGrid = document.getElementById('products-grid'); 
-        
-        if (!result.data || result.data.length === 0) {
-            productsGrid.innerHTML = `<p style="text-align:center; grid-column: 1/-1;">No products found for ${team}</p>`;
-            return;
-        }
-
-        productsGrid.innerHTML = result.data.map(p => `
-            <div class="product-card">
-                <div class="product-image-wrap">
-                    <img src="${getCleanUrl(p.img)}" alt="${p.name}" loading="lazy">
-                </div>
-                <div class="product-info">
-                    <span class="team-tag">${p.team}</span>
-                    <h3>${p.name}</h3>
-                    <p class="price">₱${p.price}</p>
-                    <button class="add-to-cart-btn">ADD TO CART</button>
-                </div>
-            </div>
-        `).join('');
-    } catch (err) {
-        console.error("Failed to load products:", err);
+  try {
+    // Build query params
+    const params = new URLSearchParams();
+    if (filter !== 'All' && filter !== 'Hoodie' && filter !== 'Sale') {
+      params.set('team', filter);
     }
+    if (sort !== 'featured') params.set('sort', sort);
+
+    const res = await fetch(`${API_BASE}/products?${params}`);
+    const json = await res.json();
+
+    if (!json.success) throw new Error(json.message);
+
+    // For Hoodie / Sale filters, filter client-side since they use category/badge
+    let items = json.data;
+    if (filter === 'Hoodie') items = items.filter(p => p.category === 'Hoodie');
+    if (filter === 'Sale') items = items.filter(p => p.badge === 'Sale');
+
+    // Keep global products in sync for modal lookups
+    products = json.data;
+
+    renderGrid(items);
+  } catch (err) {
+    console.error('Failed to fetch products:', err);
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--red)">
+      <p style="font-family:var(--font-display);font-size:20px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">⚠ API Offline</p>
+      <p style="font-size:13px;color:var(--text-muted)">Make sure your backend server is running at ${API_BASE}</p>
+    </div>`;
+    grid.style.transition = 'opacity 0.3s';
+    grid.style.opacity = '1';
+  }
 }
-
-// Initial load
-fetchProducts();
 
 // ─────────────────────────────────────────
 // SEARCH VIA API
