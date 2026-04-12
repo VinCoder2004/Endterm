@@ -1637,9 +1637,11 @@ footer {
 // API CONFIG — change this to your backend URL
 // ─────────────────────────────────────────
 // Add this line at the very beginning of your script
-const API_BASE = 'http://localhost:3001/api';
 
-const API_URL = 'http://localhost:3001/api/products';
+
+// ✅ NEW (Relative path)
+const API_URL = '/api/products';
+
 
 let products = []; // populated from MongoDB via API
 let cart = [], wishlist = [], activeFilter = 'All', selectedSize = null, currentProduct = null;
