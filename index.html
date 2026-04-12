@@ -1714,7 +1714,7 @@ footer {
 </section>
 
 <!-- PRODUCTS -->
-<section class="products fade-in" id="products">
+<section class="products" id="products">
   <div class="section-header">
     <div class="section-tag">Official Merchandise</div>
     <h2 class="section-title">PRO PLAYER <span class="gold">JERSEYS</span></h2>
@@ -2013,6 +2013,9 @@ function renderGrid(items) {
     `).join('') : `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)"><p style="font-family:var(--font-display);font-size:24px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">No results</p><p style="font-size:13px">Try a different filter</p></div>`;
   grid.style.opacity = '1';
   updateWishlistIcons();
+  // Ensure parent section is visible (fade-in observer may have missed it)
+  document.getElementById('products').style.opacity = '1';
+  document.getElementById('products').style.transform = 'none';
 }
 
 // Wrapper to keep filter button behavior working
