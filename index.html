@@ -39,6 +39,7 @@
 }
 
 html { scroll-behavior: smooth; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 body {
   font-family: var(--font-body);
@@ -1912,7 +1913,19 @@ const sizes = ['XS','S','M','L','XL','XXL'];
 // ─────────────────────────────────────────
 async function fetchProducts(filter = 'All', sort = 'featured') {
   const grid = document.getElementById('productsGrid');
-  grid.style.opacity = '0';
+
+  // Show loading skeleton immediately so there's no blank gap
+  grid.style.opacity = '1';
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="product-card" style="pointer-events:none">
+      <div class="product-image-wrap" style="background:var(--bg-elevated);animation:pulse 1.4s ease-in-out infinite;min-height:280px;"></div>
+      <div class="product-info">
+        <div style="height:12px;background:var(--bg-elevated);border-radius:2px;margin-bottom:10px;animation:pulse 1.4s ease-in-out infinite;"></div>
+        <div style="height:16px;background:var(--bg-elevated);border-radius:2px;margin-bottom:8px;width:70%;animation:pulse 1.4s ease-in-out infinite;"></div>
+        <div style="height:12px;background:var(--bg-elevated);border-radius:2px;width:50%;animation:pulse 1.4s ease-in-out infinite;"></div>
+      </div>
+    </div>
+  `).join('');
 
   try {
     // Build query params
@@ -1942,7 +1955,6 @@ async function fetchProducts(filter = 'All', sort = 'featured') {
       <p style="font-family:var(--font-display);font-size:20px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">⚠ API Offline</p>
       <p style="font-size:13px;color:var(--text-muted)">Make sure your backend server is running at ${API_BASE}</p>
     </div>`;
-    grid.style.transition = 'opacity 0.3s';
     grid.style.opacity = '1';
   }
 }
@@ -1968,8 +1980,7 @@ async function searchProducts(q) {
 // ─────────────────────────────────────────
 function renderGrid(items) {
   const grid = document.getElementById('productsGrid');
-  setTimeout(() => {
-    grid.innerHTML = items.length ? items.map(p => `
+  grid.innerHTML = items.length ? items.map(p => `
       <div class="product-card" data-id="${p._id}">
         <div class="product-image-wrap">
           <img src="${p.img.includes('<img src=') ? p.img.match(/src="([^"]+)"/)[1] : p.img}" alt="${p.name}" loading="lazy">
@@ -2000,10 +2011,8 @@ function renderGrid(items) {
         </div>
       </div>
     `).join('') : `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)"><p style="font-family:var(--font-display);font-size:24px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">No results</p><p style="font-size:13px">Try a different filter</p></div>`;
-    grid.style.transition = 'opacity 0.3s';
-    grid.style.opacity = '1';
-    updateWishlistIcons();
-  }, 150);
+  grid.style.opacity = '1';
+  updateWishlistIcons();
 }
 
 // Wrapper to keep filter button behavior working
