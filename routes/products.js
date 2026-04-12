@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // ─────────────────────────────────────────
 // GET /api/products
 // Fetch all products. Supports optional query params:
-//   ?team=ECHO   → filter by team
+//   ?team=ECHO   → filter by team (CASE-INSENSITIVE)
 //   ?badge=Sale  → filter by badge (New, Sale, Limited)
 //   ?sort=price-low | price-high | newest | featured
 // ─────────────────────────────────────────
@@ -14,7 +14,11 @@ router.get('/', async (req, res) => {
     const { team, badge, sort } = req.query;
     const filter = {};
 
-    if (team && team !== 'All') filter.team = team;
+    // ✨ FIX: Use regex to ignore Case-Sensitivity (matches 'ONIC', 'Onic', 'onic')
+    if (team && team !== 'All') {
+      filter.team = { $regex: new RegExp(`^${team}$`, 'i') };
+    }
+    
     if (badge) filter.badge = badge;
 
     let query = Product.find(filter);
@@ -23,7 +27,7 @@ router.get('/', async (req, res) => {
     if (sort === 'price-low') query = query.sort({ price: 1 });
     else if (sort === 'price-high') query = query.sort({ price: -1 });
     else if (sort === 'newest') query = query.sort({ createdAt: -1 });
-    else query = query.sort({ createdAt: 1 }); // default: featured/oldest first
+    else query = query.sort({ createdAt: 1 }); // default
 
     const products = await query.exec();
     res.json({ success: true, count: products.length, data: products });
@@ -31,6 +35,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
 
 // ─────────────────────────────────────────
 // GET /api/products/search?q=echo
