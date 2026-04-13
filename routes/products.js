@@ -5,21 +5,30 @@ const Product = require('../models/Product');
 // ─────────────────────────────────────────
 // GET /api/products
 // Fetch all products. Supports optional query params:
-//   ?team=ECHO   → filter by team (CASE-INSENSITIVE)
-//   ?badge=Sale  → filter by badge (New, Sale, Limited)
+//   ?team=ECHO      → filter by team (CASE-INSENSITIVE)
+//   ?category=Hoodie → filter by category (CASE-INSENSITIVE)
+//   ?badge=Sale     → filter by badge (New, Sale, Limited) (CASE-INSENSITIVE)
 //   ?sort=price-low | price-high | newest | featured
 // ─────────────────────────────────────────
 router.get('/', async (req, res) => {
   try {
-    const { team, badge, sort } = req.query;
+    const { team, badge, sort, category } = req.query;
     const filter = {};
 
-    // ✨ FIX: Use regex to ignore Case-Sensitivity (matches 'ONIC', 'Onic', 'onic')
+    // Filter by team (case-insensitive)
     if (team && team !== 'All') {
       filter.team = { $regex: new RegExp(`^${team}$`, 'i') };
     }
-    
-    if (badge) filter.badge = badge;
+
+    // Filter by category e.g. Hoodie (case-insensitive)
+    if (category) {
+      filter.category = { $regex: new RegExp(category, 'i') };
+    }
+
+    // Filter by badge e.g. Sale (case-insensitive)
+    if (badge) {
+      filter.badge = { $regex: new RegExp(`^${badge}$`, 'i') };
+    }
 
     let query = Product.find(filter);
 
@@ -27,7 +36,7 @@ router.get('/', async (req, res) => {
     if (sort === 'price-low') query = query.sort({ price: 1 });
     else if (sort === 'price-high') query = query.sort({ price: -1 });
     else if (sort === 'newest') query = query.sort({ createdAt: -1 });
-    else query = query.sort({ createdAt: 1 }); // default
+    else query = query.sort({ createdAt: 1 }); // default: featured
 
     const products = await query.exec();
     res.json({ success: true, count: products.length, data: products });
@@ -48,7 +57,7 @@ router.get('/search', async (req, res) => {
 
     const regex = new RegExp(q, 'i'); // case-insensitive
     const products = await Product.find({
-      $or: [{ name: regex }, { team: regex }, { player: regex }],
+      $or: [{ name: regex }, { team: regex }, { player: regex }, { category: regex }],
     });
 
     res.json({ success: true, count: products.length, data: products });
@@ -97,7 +106,7 @@ router.put('/:id', async (req, res) => {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true, runValidators: true } // return updated doc & re-run schema validators
+      { new: true, runValidators: true }
     );
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
