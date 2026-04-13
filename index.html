@@ -1930,7 +1930,11 @@ async function fetchProducts(filter = 'All', sort = 'featured') {
   try {
     // Build query params
     const params = new URLSearchParams();
-    if (filter !== 'All' && filter !== 'Hoodie' && filter !== 'Sale') {
+    if (filter === 'Hoodie') {
+      params.set('category', 'hoodie');
+    } else if (filter === 'Sale') {
+      params.set('badge', 'sale');
+    } else if (filter !== 'All') {
       params.set('team', filter);
     }
     if (sort !== 'featured') params.set('sort', sort);
@@ -1940,10 +1944,7 @@ async function fetchProducts(filter = 'All', sort = 'featured') {
 
     if (!json.success) throw new Error(json.message);
 
-    // For Hoodie / Sale filters, filter client-side since they use category/badge
     let items = json.data;
-    if (filter === 'Hoodie') items = items.filter(p => p.category === 'Hoodie');
-    if (filter === 'Sale') items = items.filter(p => p.badge === 'Sale');
 
     // Keep global products in sync for modal lookups
     products = json.data;
@@ -2110,7 +2111,7 @@ function openModal(id,e) {
   document.getElementById('modalDesc').textContent=p.desc;
   document.getElementById('sizeGrid').innerHTML=sizes.map(s=>`<button class="size-btn" onclick="selectSize('${s}',this)">${s}</button>`).join('');
   document.getElementById('modalColors').innerHTML=p.colors.map(c=>`<div class="color-dot" style="background:${c};width:20px;height:20px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)" title="${c}"></div>`).join('');
-  document.getElementById('modalAddBtn').onclick=()=>{ addToCart(p.id); closeModal(); };
+  document.getElementById('modalAddBtn').onclick=()=>{ addToCart(p._id); closeModal(); };
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
