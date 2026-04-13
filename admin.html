@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS GEAR — Official ML:BB Pro Jersey Store</title>
+<title>NEXUS GEAR — Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,1880 +12,870 @@
   --bg-void: #050507;
   --bg-dark: #0A0A0F;
   --bg-card: #0F0F1A;
-  --bg-card2: #13131F;
   --bg-elevated: #1A1A2E;
   --border: rgba(255,255,255,0.06);
   --border-bright: rgba(255,255,255,0.12);
   --cyan: #00D4FF;
-  --cyan-dim: rgba(0,212,255,0.15);
-  --cyan-glow: rgba(0,212,255,0.4);
+  --cyan-dim: rgba(0,212,255,0.12);
   --gold: #FFB800;
-  --gold-dim: rgba(255,184,0,0.15);
+  --gold-dim: rgba(255,184,0,0.12);
   --red: #FF3B5C;
-  --red-dim: rgba(255,59,92,0.15);
-  --purple: #8B5CF6;
-  --purple-dim: rgba(139,92,246,0.15);
+  --red-dim: rgba(255,59,92,0.12);
   --green: #00FF87;
+  --green-dim: rgba(0,255,135,0.12);
+  --purple: #8B5CF6;
   --text-primary: #F0F0FF;
   --text-secondary: #8888AA;
   --text-muted: #444466;
   --font-display: 'Orbitron', monospace;
   --font-ui: 'Rajdhani', sans-serif;
   --font-body: 'Inter', sans-serif;
-  --nav-h: 68px;
-  --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
-  --glow-cyan: 0 0 20px rgba(0,212,255,0.35), 0 0 60px rgba(0,212,255,0.1);
-  --glow-gold: 0 0 20px rgba(255,184,0,0.35), 0 0 60px rgba(255,184,0,0.1);
+  --sidebar-w: 240px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+  --glow-cyan: 0 0 20px rgba(0,212,255,0.3);
+  --glow-red: 0 0 20px rgba(255,59,92,0.3);
+  --glow-green: 0 0 20px rgba(0,255,135,0.3);
 }
 
-html { scroll-behavior: smooth; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+html, body { height: 100%; }
 
 body {
   font-family: var(--font-body);
   background: var(--bg-void);
   color: var(--text-primary);
   font-size: 14px;
-  line-height: 1.6;
-  overflow-x: hidden;
+  display: flex;
+  overflow: hidden;
 }
 
-/* SCROLLBAR */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
-::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
-
-/* SCANLINE TEXTURE */
+/* SCANLINE */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
   pointer-events: none;
-  z-index: 1000;
+  z-index: 9999;
 }
 
-/* ANNOUNCEMENT */
-.announcement {
-  background: linear-gradient(90deg, var(--bg-dark), #0D0D20, var(--bg-dark));
-  border-bottom: 1px solid var(--cyan);
-  color: var(--cyan);
-  text-align: center;
-  padding: 9px 16px;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  position: relative;
-  overflow: hidden;
-}
-.announcement::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.08), transparent);
-  animation: sweep 3s infinite;
-}
-@keyframes sweep { to { left: 140%; } }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
 
-/* NAV */
-nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: var(--nav-h);
-  background: rgba(5,5,7,0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-bright);
-  display: flex;
-  align-items: center;
-  padding: 0 4%;
-  gap: 20px;
-}
-
-.nav-logo {
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-dark);
+  border-right: 1px solid var(--border-bright);
   display: flex;
   flex-direction: column;
-  text-decoration: none;
   flex-shrink: 0;
-  line-height: 1;
+  height: 100vh;
+  position: sticky;
+  top: 0;
 }
-.nav-logo-main {
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo-main {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--cyan);
   letter-spacing: 0.1em;
   text-shadow: var(--glow-cyan);
 }
-.nav-logo-sub {
+.sidebar-logo-sub {
   font-family: var(--font-ui);
   font-size: 10px;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  margin-top: 2px;
 }
 
-.nav-links {
-  display: flex;
-  gap: 4px;
-  list-style: none;
-  margin-left: 32px;
+.sidebar-nav {
+  padding: 12px 10px;
+  flex: 1;
+  overflow-y: auto;
 }
-.nav-links a {
-  color: var(--text-secondary);
-  text-decoration: none;
+
+.nav-section-label {
   font-family: var(--font-ui);
-  font-size: 14px;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  padding: 6px 14px;
-  border: 1px solid transparent;
-  transition: all var(--transition);
-  position: relative;
-}
-.nav-links a:hover, .nav-links a.active {
-  color: var(--cyan);
-  border-color: rgba(0,212,255,0.3);
-  background: rgba(0,212,255,0.05);
-}
-.nav-links a.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1px; left: 0; right: 0;
-  height: 1px;
-  background: var(--cyan);
-  box-shadow: var(--glow-cyan);
+  color: var(--text-muted);
+  padding: 10px 10px 6px;
 }
 
-.nav-spacer { flex: 1; }
-
-.nav-actions { display: flex; align-items: center; gap: 12px; }
-
-.nav-search {
-  position: relative;
+.nav-item {
   display: flex;
   align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  transition: all var(--transition);
+  margin-bottom: 2px;
+  text-decoration: none;
 }
-.nav-search input {
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border-bright);
+}
+.nav-item.active {
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  border-color: rgba(0,212,255,0.25);
+}
+.nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+.back-to-store {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  transition: all var(--transition);
+}
+.back-to-store:hover { color: var(--cyan); border-color: rgba(0,212,255,0.3); }
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 60px;
+  background: rgba(10,10,15,0.95);
+  border-bottom: 1px solid var(--border-bright);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  flex-shrink: 0;
+  backdrop-filter: blur(12px);
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.topbar-title span { color: var(--cyan); }
+
+.topbar-spacer { flex: 1; }
+
+.topbar-search {
+  position: relative;
+}
+.topbar-search input {
   background: var(--bg-card);
   border: 1px solid var(--border-bright);
   padding: 7px 36px 7px 14px;
   font-family: var(--font-body);
   font-size: 13px;
   color: var(--text-primary);
-  width: 200px;
+  width: 220px;
   outline: none;
   transition: all var(--transition);
 }
-.nav-search input:focus {
-  border-color: var(--cyan);
-  box-shadow: 0 0 0 2px var(--cyan-dim);
-  width: 240px;
-}
-.nav-search input::placeholder { color: var(--text-muted); }
-.search-icon { position: absolute; right: 10px; color: var(--text-muted); font-size: 15px; pointer-events: none; }
+.topbar-search input:focus { border-color: var(--cyan); width: 260px; }
+.topbar-search input::placeholder { color: var(--text-muted); }
+.topbar-search-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
 
-.icon-btn {
-  background: var(--bg-card);
-  border: 1px solid var(--border-bright);
-  cursor: pointer;
-  padding: 8px 10px;
-  color: var(--text-secondary);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition);
-  font-size: 18px;
-}
-.icon-btn:hover {
-  color: var(--cyan);
-  border-color: var(--cyan);
-  background: var(--cyan-dim);
-}
-
-.cart-badge {
-  position: absolute;
-  top: -4px; right: -4px;
-  background: var(--red);
-  color: #fff;
-  font-size: 9px;
-  font-weight: 700;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-}
-.cart-badge.pop { animation: pop 0.3s ease; }
-@keyframes pop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.5)} }
-
-.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; background: var(--bg-card); border: 1px solid var(--border-bright); }
-.hamburger span { width: 20px; height: 1.5px; background: var(--cyan); display: block; transition: all 0.3s; }
-
-/* HERO */
-.hero {
-  position: relative;
-  min-height: calc(100vh - var(--nav-h) - 40px);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background: var(--bg-void);
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 80% at 75% 50%, rgba(0,212,255,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(139,92,246,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 30% 40% at 80% 10%, rgba(255,184,0,0.04) 0%, transparent 50%);
-}
-
-/* Grid lines */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  padding: 80px 5% 80px 6%;
-  flex: 1;
-  max-width: 620px;
-}
-
-.hero-eyebrow {
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: var(--cyan-dim);
-  border: 1px solid rgba(0,212,255,0.3);
-  padding: 6px 16px;
+  gap: 8px;
+  padding: 8px 18px;
   font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 13px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--cyan);
-  margin-bottom: 28px;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all var(--transition);
+  white-space: nowrap;
 }
-.hero-eyebrow-dot {
-  width: 6px; height: 6px;
-  background: var(--cyan);
-  border-radius: 50%;
-  animation: pulse 1.5s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(44px, 6vw, 80px);
-  font-weight: 900;
-  line-height: 0.95;
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
-  margin-bottom: 24px;
-}
-.hero-title-line1 { color: var(--text-primary); display: block; }
-.hero-title-line2 {
-  display: block;
-  background: linear-gradient(90deg, var(--cyan), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 20px rgba(0,212,255,0.4));
-}
-.hero-title-line3 { color: var(--gold); display: block; text-shadow: var(--glow-gold); }
-
-.hero-sub {
-  font-size: 15px;
-  color: var(--text-secondary);
-  max-width: 460px;
-  line-height: 1.8;
-  margin-bottom: 44px;
-  font-family: var(--font-body);
-}
-
-.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
-
 .btn-primary {
   background: var(--cyan);
-  color: var(--bg-void);
-  border: none;
-  padding: 13px 32px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  border-color: var(--cyan);
+  color: #000;
   font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition);
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  position: relative;
 }
-.btn-primary:hover {
-  background: #fff;
-  box-shadow: var(--glow-cyan);
-  transform: translateY(-2px);
-}
-
-.btn-outline {
+.btn-primary:hover { box-shadow: var(--glow-cyan); filter: brightness(1.1); }
+.btn-danger {
   background: transparent;
-  color: var(--cyan);
-  border: 1px solid var(--cyan);
-  padding: 12px 28px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  border-color: var(--red);
+  color: var(--red);
 }
-.btn-outline:hover {
-  background: var(--cyan-dim);
-  box-shadow: var(--glow-cyan);
-  transform: translateY(-2px);
+.btn-danger:hover { background: var(--red-dim); box-shadow: var(--glow-red); }
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border-bright);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+.btn-sm { padding: 5px 12px; font-size: 11px; }
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
 }
 
-.hero-stats {
-  display: flex;
-  gap: 36px;
-  margin-top: 52px;
-  padding-top: 32px;
-  border-top: 1px solid var(--border);
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
 }
-.hero-stat-val {
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.stat-card.cyan::before { background: var(--cyan); box-shadow: var(--glow-cyan); }
+.stat-card.gold::before { background: var(--gold); box-shadow: var(--glow-green); }
+.stat-card.red::before { background: var(--red); }
+.stat-card.green::before { background: var(--green); box-shadow: var(--glow-green); }
+
+.stat-label {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.stat-value {
   font-family: var(--font-display);
   font-size: 28px;
   font-weight: 700;
-  color: var(--cyan);
-  line-height: 1;
-  text-shadow: var(--glow-cyan);
-}
-.hero-stat-label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: 5px;
-}
-
-.hero-visual {
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 50%;
-  overflow: hidden;
-}
-.hero-visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  opacity: 0.7;
-  mix-blend-mode: lighten;
-}
-.hero-visual::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 40%;
-  background: linear-gradient(90deg, var(--bg-void), transparent);
-  z-index: 1;
-}
-.hero-visual::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 50%, var(--bg-void));
-  z-index: 1;
-}
-
-.hero-badge {
-  position: absolute;
-  bottom: 60px; right: 40px;
-  z-index: 3;
-  background: rgba(5,5,7,0.85);
-  border: 1px solid var(--gold);
-  padding: 14px 20px;
-  backdrop-filter: blur(8px);
-}
-.hero-badge-label {
-  font-family: var(--font-ui);
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-.hero-badge-val {
-  font-family: var(--font-display);
-  font-size: 22px;
   color: var(--text-primary);
-  margin-top: 2px;
+  line-height: 1;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-family: var(--font-ui);
 }
 
-/* TICKER */
-.ticker-wrap {
+/* ── PANEL ── */
+.panel {
   background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 0;
-  overflow: hidden;
-  position: relative;
+  border: 1px solid var(--border-bright);
+  margin-bottom: 24px;
 }
-.ticker-track {
-  display: flex;
-  gap: 60px;
-  animation: ticker 25s linear infinite;
-  white-space: nowrap;
-  width: max-content;
-}
-@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.ticker-item {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+.panel-header {
   display: flex;
   align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
   gap: 12px;
 }
-.ticker-item span { color: var(--cyan); }
-.ticker-sep { color: var(--cyan); opacity: 0.4; }
-
-/* SECTION */
-section { padding: 80px 5%; }
-
-.section-header { text-align: center; margin-bottom: 52px; }
-.section-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.2em;
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--cyan);
-  margin-bottom: 14px;
+  flex: 1;
 }
-.section-tag::before, .section-tag::after {
-  content: '';
-  width: 24px; height: 1px;
-  background: var(--cyan);
-  opacity: 0.5;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 4vw, 44px);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-primary);
-}
-.section-title .accent { color: var(--cyan); text-shadow: var(--glow-cyan); }
-.section-title .gold { color: var(--gold); }
+.panel-body { padding: 20px; }
 
-/* TEAMS SECTION */
-.teams { background: var(--bg-dark); }
-.teams-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead tr {
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border-bright);
 }
-@media(max-width:1100px){ .teams-grid { grid-template-columns: repeat(4,1fr); } }
-@media(max-width:860px){ .teams-grid { grid-template-columns: repeat(3,1fr); } }
-@media(max-width:580px){ .teams-grid { grid-template-columns: repeat(2,1fr); } }
-.team-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 28px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--transition);
-  position: relative;
-  overflow: hidden;
-  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-}
-.team-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--team-color, var(--cyan-dim));
-  opacity: 0;
-  transition: opacity var(--transition);
-}
-.team-card:hover::before { opacity: 1; }
-.team-card:hover {
-  border-color: var(--team-accent, var(--cyan));
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px var(--team-shadow, var(--cyan-dim));
-}
-.team-logo {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  margin: 0 auto 14px;
-  object-fit: cover;
-  border: 2px solid var(--border-bright);
-  transition: border-color var(--transition);
-}
-.team-card:hover .team-logo { border-color: var(--team-accent, var(--cyan)); }
-.team-name {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-.team-region {
+th {
   font-family: var(--font-ui);
   font-size: 11px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  padding: 10px 14px;
+  text-align: left;
+  white-space: nowrap;
 }
-.team-count {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--team-accent, var(--cyan));
-  letter-spacing: 0.08em;
-}
-
-/* FILTERS */
-.filters-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 40px;
-}
-.filter-label {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-right: 4px;
-}
-.filter-chip {
-  background: var(--bg-card);
-  border: 1px solid var(--border-bright);
-  padding: 6px 18px;
-  font-family: var(--font-ui);
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--transition);
-  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  vertical-align: middle;
 }
-.filter-chip:hover, .filter-chip.active {
-  background: var(--cyan-dim);
-  color: var(--cyan);
-  border-color: var(--cyan);
-}
-.filter-spacer { flex: 1; }
-.sort-select {
-  background: var(--bg-card);
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background var(--transition); }
+tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+.product-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  object-position: top;
   border: 1px solid var(--border-bright);
-  padding: 6px 12px;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  letter-spacing: 0.06em;
-  outline: none;
-}
-
-/* PRODUCTS */
-.products { background: var(--bg-void); }
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
-  transition: opacity 0.3s;
-}
-
-.product-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: all var(--transition);
-  position: relative;
-  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-  overflow: hidden;
-}
-.product-card:hover {
-  border-color: var(--cyan);
-  transform: translateY(-4px);
-  box-shadow: 0 0 0 1px var(--cyan), var(--glow-cyan);
-}
-
-.product-image-wrap {
-  position: relative;
-  aspect-ratio: 3/4;
-  overflow: hidden;
+  display: block;
   background: var(--bg-elevated);
 }
-.product-image-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  display: block;
-  transition: transform 0.5s ease;
-}
-.product-card:hover .product-image-wrap img { transform: scale(1.06); }
-
-.product-image-wrap::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 40%;
-  background: linear-gradient(transparent, var(--bg-card));
-  pointer-events: none;
-}
-
-.product-badges {
-  position: absolute;
-  top: 12px; left: 12px;
+.product-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-bright);
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-muted);
 }
+
 .badge {
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
   font-family: var(--font-ui);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-weight: 700;
-  clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px));
+  font-weight: 600;
 }
-.badge-new { background: var(--cyan); color: var(--bg-void); }
-.badge-sale { background: var(--red); color: #fff; }
-.badge-limited { background: var(--gold); color: var(--bg-void); }
-.badge-soldout { background: var(--text-muted); color: #fff; }
+.badge-new { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+.badge-sale { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,59,92,0.3); }
+.badge-limited { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(255,184,0,0.3); }
+.badge-none { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.badge-hoodie { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,255,135,0.3); }
+.badge-jersey { background: rgba(139,92,246,0.12); color: var(--purple); border: 1px solid rgba(139,92,246,0.3); }
 
-.product-team-tag {
-  position: absolute;
-  top: 12px; right: 12px;
-  z-index: 2;
-  background: rgba(5,5,7,0.8);
-  border: 1px solid var(--border-bright);
-  padding: 4px 8px;
-  font-family: var(--font-ui);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  backdrop-filter: blur(4px);
-}
+.td-name { color: var(--text-primary); font-weight: 500; max-width: 180px; }
+.td-price { font-family: var(--font-ui); font-size: 14px; color: var(--gold); font-weight: 600; }
+.td-actions { display: flex; gap: 6px; }
 
-.product-actions {
-  position: absolute;
-  bottom: 14px; right: 12px;
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 500;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
-  transform: translateX(10px);
-  transition: all var(--transition);
-  z-index: 3;
-}
-.product-card:hover .product-actions { opacity: 1; transform: translateX(0); }
-
-.action-btn {
-  width: 34px; height: 34px;
-  background: rgba(5,5,7,0.85);
+  pointer-events: none;
+  transition: opacity 0.2s;
   backdrop-filter: blur(4px);
-  border: 1px solid var(--border-bright);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all var(--transition);
-  color: var(--text-secondary);
 }
-.action-btn:hover {
-  background: var(--cyan-dim);
-  border-color: var(--cyan);
-  color: var(--cyan);
-}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
 
-.product-info { padding: 16px; }
-.product-team {
-  font-family: var(--font-ui);
-  font-size: 10px;
+.modal {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-bright);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(16px);
+  transition: transform 0.2s;
+  box-shadow: 0 0 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.08);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border-bright);
+  position: sticky;
+  top: 0;
+  background: var(--bg-dark);
+  z-index: 1;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--cyan);
-  margin-bottom: 5px;
+  flex: 1;
 }
-.product-name {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-  line-height: 1.2;
-}
-.product-player {
-  font-family: var(--font-ui);
-  font-size: 12px;
+.modal-close {
+  background: none;
+  border: none;
   color: var(--text-muted);
-  letter-spacing: 0.06em;
-  margin-bottom: 10px;
-}
-.product-colors { display: flex; gap: 6px; margin-bottom: 12px; }
-.color-dot {
-  width: 12px; height: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 18px;
   cursor: pointer;
-  transition: transform 0.2s;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  padding: 4px 8px;
+  transition: color var(--transition);
 }
-.color-dot:hover { transform: scale(1.4); }
-
-.product-footer {
+.modal-close:hover { color: var(--red); }
+.modal-body { padding: 24px; }
+.modal-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 10px;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 22px;
   border-top: 1px solid var(--border);
-}
-.product-price {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--cyan);
-}
-.product-price-original {
-  text-decoration: line-through;
-  color: var(--text-muted);
-  font-size: 13px;
-  margin-left: 6px;
-}
-.add-to-cart-mini {
-  background: transparent;
-  border: 1px solid var(--cyan);
-  color: var(--cyan);
-  padding: 6px 16px;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all var(--transition);
-  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
-}
-.add-to-cart-mini:hover {
-  background: var(--cyan);
-  color: var(--bg-void);
-  font-weight: 700;
-}
-
-/* BANNER */
-.banner {
   background: var(--bg-dark);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  overflow: hidden;
-  min-height: 420px;
+  position: sticky;
+  bottom: 0;
 }
-.banner-img {
-  position: relative;
-  overflow: hidden;
-}
-.banner-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.6;
-  mix-blend-mode: luminosity;
-  filter: hue-rotate(180deg) saturate(2);
-}
-.banner-img::after {
-  content: '';
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 40%;
-  background: linear-gradient(90deg, transparent, var(--bg-dark));
-}
-.banner-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 60px 52px;
-  position: relative;
-}
-.banner-content::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 20%; bottom: 20%;
-  width: 2px;
-  background: linear-gradient(transparent, var(--cyan), transparent);
-}
-.banner-tag {
+
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
   font-family: var(--font-ui);
   font-size: 11px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  color: var(--text-muted);
 }
-.banner-tag::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
-.banner-title {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 3.5vw, 48px);
-  font-weight: 900;
-  text-transform: uppercase;
-  line-height: 1.0;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-  letter-spacing: 0.02em;
-}
-.banner-title .highlight {
-  display: block;
-  color: var(--gold);
-  text-shadow: var(--glow-gold);
-}
-.banner-sub {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 36px;
-  max-width: 380px;
-}
-.banner-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--gold);
-  color: var(--bg-void);
-  border: none;
-  padding: 13px 28px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition);
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-  width: fit-content;
-}
-.banner-cta:hover { background: #fff; box-shadow: var(--glow-gold); transform: translateY(-2px); }
-
-/* FEATURES */
-.features { background: var(--bg-dark); }
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-}
-.feature-item {
-  background: var(--bg-card);
-  padding: 36px 24px;
-  text-align: center;
-  transition: all var(--transition);
-}
-.feature-item:hover {
-  background: var(--bg-elevated);
-}
-.feature-icon {
-  font-size: 28px;
-  margin-bottom: 14px;
-  display: block;
-}
-.feature-title {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--cyan);
-  margin-bottom: 8px;
-}
-.feature-desc { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
-
-/* NEWSLETTER */
-.newsletter {
-  background: var(--bg-void);
-  text-align: center;
-  padding: 80px 5%;
-  position: relative;
-  overflow: hidden;
-}
-.newsletter::before {
-  content: 'NEXUS';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%,-50%);
-  font-family: var(--font-display);
-  font-size: clamp(100px, 18vw, 200px);
-  font-weight: 900;
-  color: rgba(0,212,255,0.02);
-  pointer-events: none;
-  white-space: nowrap;
-  letter-spacing: 0.1em;
-}
-.newsletter-title {
-  font-family: var(--font-display);
-  font-size: clamp(24px, 3vw, 36px);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-primary);
-  margin-bottom: 10px;
-  position: relative;
-}
-.newsletter-sub { color: var(--text-secondary); margin-bottom: 36px; font-size: 14px; position: relative; }
-.newsletter-form {
-  display: flex;
-  gap: 0;
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
-}
-.newsletter-input {
-  flex: 1;
+.form-control {
   background: var(--bg-card);
   border: 1px solid var(--border-bright);
-  border-right: none;
-  padding: 13px 20px;
+  padding: 9px 12px;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
   outline: none;
   transition: border-color var(--transition);
+  width: 100%;
 }
-.newsletter-input:focus { border-color: var(--cyan); }
-.newsletter-input::placeholder { color: var(--text-muted); }
-.newsletter-btn {
-  background: var(--cyan);
-  color: var(--bg-void);
-  border: none;
-  padding: 13px 24px;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition);
-  white-space: nowrap;
-}
-.newsletter-btn:hover { background: #fff; }
+.form-control:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px var(--cyan-dim); }
+.form-control::placeholder { color: var(--text-muted); }
+select.form-control { cursor: pointer; }
+select.form-control option { background: var(--bg-dark); }
+textarea.form-control { resize: vertical; min-height: 80px; }
 
-/* FOOTER */
-footer {
-  background: var(--bg-dark);
-  border-top: 1px solid var(--border-bright);
-  padding: 64px 5% 32px;
-}
-.footer-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 48px;
-  margin-bottom: 48px;
-}
-.footer-logo {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--cyan);
-  letter-spacing: 0.1em;
-  text-shadow: var(--glow-cyan);
-  margin-bottom: 14px;
-}
-.footer-desc { font-size: 13px; line-height: 1.8; color: var(--text-muted); max-width: 280px; }
-.footer-socials { display: flex; gap: 10px; margin-top: 20px; }
-.social-btn {
-  width: 34px; height: 34px;
-  border: 1px solid var(--border-bright);
-  background: var(--bg-card);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
+/* IMAGE UPLOAD */
+.img-upload-area {
+  border: 2px dashed var(--border-bright);
+  padding: 20px;
+  text-align: center;
   cursor: pointer;
   transition: all var(--transition);
-  color: var(--text-muted);
-  text-decoration: none;
+  position: relative;
 }
-.social-btn:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
-.footer-col-title {
+.img-upload-area:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+.img-upload-area.has-img { border-style: solid; border-color: var(--cyan); }
+.img-upload-area input[type="file"] { display: none; }
+.img-upload-icon { font-size: 28px; color: var(--text-muted); margin-bottom: 6px; }
+.img-upload-text { font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+.img-upload-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.img-preview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  display: none;
+}
+.img-preview.visible { display: block; }
+
+.img-tabs { display: flex; gap: 0; margin-bottom: 12px; }
+.img-tab {
+  flex: 1;
+  padding: 7px;
   font-family: var(--font-ui);
   font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--cyan);
-  margin-bottom: 20px;
-}
-.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.footer-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 13px;
-  font-family: var(--font-body);
-  transition: color var(--transition);
-}
-.footer-links a:hover { color: var(--cyan); }
-.footer-bottom {
-  border-top: 1px solid var(--border);
-  padding-top: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--text-muted);
-  flex-wrap: wrap;
-  gap: 12px;
-  font-family: var(--font-ui);
-  letter-spacing: 0.06em;
-}
-.footer-payments { display: flex; gap: 8px; }
-.payment-badge {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  padding: 4px 10px;
-  font-size: 10px;
-  color: var(--text-secondary);
-  letter-spacing: 0.06em;
-}
-
-/* CART SIDEBAR */
-.cart-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: 200;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition);
-  backdrop-filter: blur(4px);
-}
-.cart-overlay.open { opacity: 1; pointer-events: all; }
-
-.cart-sidebar {
-  position: fixed;
-  top: 0; right: 0; bottom: 0;
-  width: 420px;
-  max-width: 100vw;
-  background: var(--bg-dark);
-  border-left: 1px solid var(--border-bright);
-  z-index: 201;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-.cart-sidebar.open { transform: translateX(0); }
-
-.cart-header {
-  padding: 22px 22px 18px;
-  border-bottom: 1px solid var(--border-bright);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-card);
-}
-.cart-title {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--cyan);
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid var(--border-bright);
+  color: var(--text-muted);
+  transition: all var(--transition);
 }
-.cart-close {
-  background: none; border: 1px solid var(--border-bright);
-  cursor: pointer; font-size: 16px; color: var(--text-muted);
-  transition: all var(--transition); padding: 4px 8px;
-}
-.cart-close:hover { color: var(--cyan); border-color: var(--cyan); }
+.img-tab:first-child { border-right: none; }
+.img-tab.active { background: var(--cyan-dim); border-color: rgba(0,212,255,0.4); color: var(--cyan); }
 
-.cart-items { flex: 1; overflow-y: auto; padding: 16px 20px; }
-.cart-item {
-  display: flex; gap: 14px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  animation: slideIn 0.3s ease;
-}
-@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+.img-url-row { display: flex; gap: 8px; }
+.img-url-row .form-control { flex: 1; }
 
-.cart-item-img {
-  width: 72px; height: 90px;
-  background: var(--bg-elevated);
-  flex-shrink: 0;
-  overflow: hidden;
+/* COLORS */
+.colors-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.color-chip {
+  width: 28px; height: 28px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
 }
-.cart-item-img img { width:100%;height:100%;object-fit:cover;object-position:top; }
-.cart-item-details { flex: 1; }
-.cart-item-team { font-family:var(--font-ui);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:3px; }
-.cart-item-name { font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.04em; }
-.cart-item-variant { font-size:12px;color:var(--text-muted);margin-bottom:8px; }
-.cart-item-qty { display:flex;align-items:center;gap:10px; }
-.qty-btn {
-  width:26px;height:26px;background:var(--bg-card);border:1px solid var(--border-bright);
-  cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;
-  color:var(--text-secondary);transition:all var(--transition);
+.color-chip.selected { border-color: var(--cyan); box-shadow: var(--glow-cyan); }
+.color-chip .remove-color {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 14px; height: 14px;
+  background: var(--red);
+  color: #fff;
+  font-size: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
 }
-.qty-btn:hover { background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan); }
-.qty-num { font-family:var(--font-display);font-size:14px;min-width:20px;text-align:center; }
-.cart-item-right { display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between; }
-.cart-item-price { font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--cyan); }
-.cart-remove { background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:11px;letter-spacing:0.06em;font-family:var(--font-ui);text-transform:uppercase;transition:color var(--transition); }
-.cart-remove:hover { color:var(--red); }
-
-.cart-empty { text-align:center;padding:60px 20px;color:var(--text-muted); }
-.cart-empty-icon { font-size:40px;margin-bottom:16px; }
-.cart-empty-text { font-family:var(--font-display);font-size:18px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:8px; }
-
-.cart-footer {
-  padding: 18px 20px;
-  border-top: 1px solid var(--border-bright);
-  background: var(--bg-card);
+.color-chip:hover .remove-color { display: flex; }
+.add-color-btn {
+  width: 28px; height: 28px;
+  border: 1px dashed var(--border-bright);
+  background: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
 }
-.cart-subtotal { display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;color:var(--text-muted);font-family:var(--font-ui);letter-spacing:0.06em;text-transform:uppercase; }
-.cart-total { display:flex;justify-content:space-between;margin-bottom:18px;padding-top:10px;border-top:1px solid var(--border-bright); }
-.cart-total-label { font-family:var(--font-ui);font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary); }
-.cart-total-value { font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cyan); }
-.checkout-btn {
-  width:100%;background:var(--cyan);color:var(--bg-void);border:none;padding:14px;
-  font-family:var(--font-ui);font-size:14px;letter-spacing:0.12em;text-transform:uppercase;
-  font-weight:700;cursor:pointer;transition:all var(--transition);
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
-  margin-bottom:8px;
-}
-.checkout-btn:hover { background:#fff; }
-.continue-btn {
-  width:100%;background:none;color:var(--text-muted);border:none;font-family:var(--font-ui);
-  font-size:12px;cursor:pointer;text-align:center;padding:8px;letter-spacing:0.08em;text-transform:uppercase;transition:color var(--transition);
-}
-.continue-btn:hover { color:var(--cyan); }
-
-/* QUICK VIEW MODAL */
-.modal-overlay {
-  position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:250;
-  opacity:0;pointer-events:none;transition:opacity var(--transition);
-  display:flex;align-items:center;justify-content:center;padding:20px;
-  backdrop-filter:blur(6px);
-}
-.modal-overlay.open { opacity:1;pointer-events:all; }
-.modal {
-  background:var(--bg-dark);border:1px solid var(--border-bright);
-  width:100%;max-width:820px;display:grid;grid-template-columns:1fr 1fr;
-  transform:scale(0.95) translateY(20px);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
-  max-height:90vh;overflow-y:auto;position:relative;
-  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
-}
-.modal-overlay.open .modal { transform:scale(1) translateY(0); }
-.modal-img { background:var(--bg-elevated);overflow:hidden;min-height:460px; }
-.modal-img img { width:100%;height:100%;object-fit:cover;object-position:top;display:block; }
-.modal-info { padding: 36px 28px; }
-.modal-team { font-family:var(--font-ui);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px; }
-.modal-name { font-family:var(--font-display);font-size:26px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-primary);margin-bottom:6px;line-height:1.1; }
-.modal-player { font-size:13px;color:var(--text-muted);margin-bottom:14px;font-family:var(--font-ui); }
-.modal-price { font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cyan);text-shadow:var(--glow-cyan);margin-bottom:20px; }
-.modal-desc { font-size:13px;color:var(--text-secondary);line-height:1.8;margin-bottom:24px; }
-.modal-label { font-family:var(--font-ui);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px; }
-.size-grid { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px; }
-.size-btn {
-  width:46px;height:40px;background:var(--bg-card);border:1px solid var(--border-bright);
-  font-family:var(--font-ui);font-size:13px;letter-spacing:0.06em;cursor:pointer;
-  transition:all var(--transition);color:var(--text-secondary);text-transform:uppercase;
-}
-.size-btn:hover,.size-btn.selected { background:var(--cyan-dim);color:var(--cyan);border-color:var(--cyan); }
-.modal-add-btn {
-  width:100%;background:var(--cyan);color:var(--bg-void);border:none;padding:14px;
-  font-family:var(--font-ui);font-size:14px;letter-spacing:0.12em;text-transform:uppercase;
-  font-weight:700;cursor:pointer;transition:all var(--transition);margin-top:8px;
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
-}
-.modal-add-btn:hover { background:#fff; }
-.modal-close {
-  position:absolute;top:14px;right:14px;background:var(--bg-card);border:1px solid var(--border-bright);
-  width:32px;height:32px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;
-  transition:all var(--transition);color:var(--text-secondary);
-}
-.modal-close:hover { background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan); }
+.add-color-btn:hover { border-color: var(--cyan); color: var(--cyan); }
 
 /* TOAST */
 .toast {
-  position:fixed;bottom:32px;left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:var(--bg-card);
-  border:1px solid var(--cyan);
-  color:var(--cyan);
-  padding:11px 24px;
-  font-family:var(--font-ui);font-size:13px;letter-spacing:0.08em;text-transform:uppercase;
-  opacity:0;transition:all 0.3s ease;z-index:300;pointer-events:none;white-space:nowrap;
-  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
-  box-shadow: var(--glow-cyan);
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-bright);
+  padding: 12px 20px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+  z-index: 9000;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.25s;
+  pointer-events: none;
+  max-width: 320px;
 }
-.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error { border-color: var(--red); color: var(--red); }
 
-/* MOBILE MENU */
-.mobile-menu {
-  position:fixed;inset:0;background:var(--bg-void);z-index:150;
-  transform:translateX(-100%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
-  display:flex;flex-direction:column;padding:80px 40px 40px;gap:20px;
-  border-right:1px solid var(--border-bright);
+/* CONFIRM MODAL */
+.confirm-modal {
+  background: var(--bg-dark);
+  border: 1px solid var(--red);
+  padding: 28px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: var(--glow-red);
+  text-align: center;
 }
-.mobile-menu.open { transform:translateX(0); }
-.mobile-menu a {
-  font-family:var(--font-display);font-size:32px;font-weight:700;
-  color:var(--text-secondary);text-decoration:none;display:block;
-  transition:color var(--transition);text-transform:uppercase;letter-spacing:0.06em;
-}
-.mobile-menu a:hover { color:var(--cyan); }
-.mobile-menu-close {
-  position:absolute;top:20px;right:20px;background:var(--bg-card);
-  border:1px solid var(--border-bright);font-size:18px;cursor:pointer;color:var(--text-secondary);
-  padding:6px 10px;transition:all var(--transition);
-}
-.mobile-menu-close:hover { color:var(--cyan);border-color:var(--cyan); }
+.confirm-icon { font-size: 36px; margin-bottom: 12px; }
+.confirm-title { font-family: var(--font-display); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
+.confirm-msg { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; }
 
-/* FADE IN */
-.fade-in { opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease; }
-.fade-in.visible { opacity:1;transform:none; }
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-title { font-family: var(--font-display); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.empty-sub { font-size: 12px; }
 
-/* RESPONSIVE */
-@media(max-width:1100px) {
-  .teams-grid { grid-template-columns:repeat(2,1fr); }
-  .features-grid { grid-template-columns:repeat(2,1fr); }
-  .footer-grid { grid-template-columns:1fr 1fr;gap:32px; }
-  .banner { grid-template-columns:1fr; }
-  .banner-img { height:300px; }
-  .banner-img::after { display:none; }
-  .banner-img img { object-position:center; }
+/* LOADING */
+.loading-row td { text-align: center; padding: 40px; color: var(--text-muted); font-family: var(--font-ui); letter-spacing: 0.1em; text-transform: uppercase; font-size: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border-bright); border-top-color: var(--cyan); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+
+/* FILTER ROW */
+.filter-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.filter-chip {
+  padding: 5px 14px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-bright);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  background: none;
 }
-@media(max-width:768px) {
-  .nav-links,.nav-search { display:none; }
-  .hamburger { display:flex; }
-  .hero-visual { display:none; }
-  .hero-content { max-width:100%; }
-  .products-grid { grid-template-columns:repeat(2,1fr);gap:16px; }
-  .teams-grid { grid-template-columns:repeat(2,1fr); }
-  .features-grid { grid-template-columns:1fr 1fr; }
-  .footer-grid { grid-template-columns:1fr; }
-  section { padding:60px 5%; }
-  .newsletter-form { flex-direction:column; }
-  .newsletter-input { border-right:1px solid var(--border-bright); }
-  .cart-sidebar { width:100%; }
-  .modal { grid-template-columns:1fr; }
-  .modal-img { min-height:260px; }
-}
-@media(max-width:480px) {
-  .products-grid { grid-template-columns:1fr; }
-  .features-grid { grid-template-columns:1fr; }
-  .hero-ctas { flex-direction:column; }
-}
+.filter-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+.filter-chip.active { background: var(--cyan-dim); border-color: rgba(0,212,255,0.4); color: var(--cyan); }
+
+/* SECTION VIEWS */
+.view { display: none; }
+.view.active { display: block; }
 </style>
 </head>
 <body>
 
-<!-- ANNOUNCEMENT -->
-<div class="announcement">
-  <span>⚡ M6 WORLD CHAMPIONSHIP JERSEYS NOW IN STOCK · FREE SHIPPING PH ORDERS ₱2000+ · USE CODE: NEXUSGEAR20 ⚡</span>
-</div>
-
-<!-- NAV -->
-<nav id="nav">
-  <a href="#" class="nav-logo">
-    <span class="nav-logo-main">NEXUS GEAR</span>
-    <span class="nav-logo-sub">Official ML:BB Pro Store</span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="#teams" class="active">Teams</a></li>
-    <li><a href="#products">Jerseys</a></li>
-    <li><a href="#products">Hoodies</a></li>
-    <li><a href="#products">Accessories</a></li>
-    <li><a href="#products" style="color:var(--red)">Sale</a></li>
-  </ul>
-  <div class="nav-spacer"></div>
-  <div class="nav-actions">
-    <div class="nav-search">
-      <input type="text" placeholder="Search jerseys..." id="searchInput">
-      <span class="search-icon">⌕</span>
-    </div>
-    <button class="icon-btn" id="wishlistBtn" title="Wishlist">♡</button>
-    <button class="icon-btn" id="cartBtn" title="Cart">
-      🛒
-      <span class="cart-badge" id="cartBadge" style="display:none">0</span>
-    </button>
-    <div class="hamburger" id="hamburger">
-      <span></span><span></span><span></span>
-    </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-main">NEXUS GEAR</div>
+    <div class="sidebar-logo-sub">Admin Panel</div>
   </div>
-</nav>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-menu-close" id="mobileMenuClose">✕</button>
-  <a href="#teams">Teams</a>
-  <a href="#products">Jerseys</a>
-  <a href="#products">Hoodies</a>
-  <a href="#products">Accessories</a>
-  <a href="#products">Sale</a>
-</div>
-
-<!-- HERO -->
-<section class="hero" id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow">
-      <span class="hero-eyebrow-dot"></span>
-      M6 World Championship 2025
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Management</div>
+    <div class="nav-item active" onclick="switchView('products', this)">
+      <span class="nav-icon">🎮</span> Products
     </div>
-    <h1 class="hero-title">
-      <span class="hero-title-line1">WEAR THE</span>
-      <span class="hero-title-line2">LEGEND</span>
-      <span class="hero-title-line3">ON YOUR BACK</span>
-    </h1>
-    <p class="hero-sub">Official ML:BB pro player jerseys. Same gear worn by your favorite teams at the World Championship. Authentic. Exclusive. Limited.</p>
-    <div class="hero-ctas">
-      <button class="btn-primary" onclick="scrollToSection('products')">Shop Jerseys ⚡</button>
-      <button class="btn-outline" onclick="scrollToSection('teams')">Browse Teams</button>
+    <div class="nav-item" onclick="switchView('add', this)">
+      <span class="nav-icon">➕</span> Add Product
     </div>
-    <div class="hero-stats">
-      <div>
-        <div class="hero-stat-val">40+</div>
-        <div class="hero-stat-label">Pro Teams</div>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/" class="back-to-store">← Back to Store</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">NEXUS GEAR / <span id="topbarSection">Products</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-search">
+      <input type="text" id="searchInput" placeholder="Search products..." oninput="handleSearch(this.value)">
+      <span class="topbar-search-icon">⌕</span>
+    </div>
+    <button class="btn btn-primary" onclick="openAddModal()">⚡ Add Product</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card cyan">
+        <div class="stat-label">Total Products</div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub">All items</div>
       </div>
-      <div>
-        <div class="hero-stat-val">200+</div>
-        <div class="hero-stat-label">Jerseys</div>
+      <div class="stat-card gold">
+        <div class="stat-label">Jerseys</div>
+        <div class="stat-value" id="statJerseys">—</div>
+        <div class="stat-sub">category: jersey</div>
       </div>
-      <div>
-        <div class="hero-stat-val">100%</div>
-        <div class="hero-stat-label">Official</div>
+      <div class="stat-card green">
+        <div class="stat-label">Hoodies</div>
+        <div class="stat-value" id="statHoodies">—</div>
+        <div class="stat-sub">category: hoodie</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">On Sale</div>
+        <div class="stat-value" id="statSale">—</div>
+        <div class="stat-sub">badge: sale</div>
       </div>
     </div>
-  </div>
-  <div class="hero-visual">
-    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=900&q=85&fit=crop" alt="Esports gaming setup">
-    <div class="hero-badge">
-      <div class="hero-badge-label">🏆 M6 Season</div>
-      <div class="hero-badge-val">2025</div>
-    </div>
-  </div>
-</section>
 
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-track">
-    <div class="ticker-item">ECHO <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">ONIC PH <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BLACKLIST <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BREN ESPORTS <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">RRQ HOSHI <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">EVOS LEGENDS <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">ONIC ESPORTS <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">ALTER EGO <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TODAK <span>MY</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">GEEK FAM <span>MY/SG</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">NOVA ESPORTS <span>SG</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">EVOS TH <span>TH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BURIRAM UTD <span>TH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BOX GAMING <span>VN</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TEAM FLASH <span>VN</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">RONIN ESPORTS <span>MM</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TEAM AVES <span>BD</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TEAM TEKKEN <span>PK</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">RSG SINGAPORE <span>M4 CHAMPS</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">FNATIC <span>INTL</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">M6 WORLD CHAMPIONSHIP <span>LIVE NOW</span></div><div class="ticker-sep">◆</div>
-    <!-- duplicate for seamless loop -->
-    <div class="ticker-item">ECHO <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">ONIC PH <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BLACKLIST <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BREN ESPORTS <span>PH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">RRQ HOSHI <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">EVOS LEGENDS <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">ONIC ESPORTS <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">ALTER EGO <span>ID</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TODAK <span>MY</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">GEEK FAM <span>MY/SG</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">NOVA ESPORTS <span>SG</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">EVOS TH <span>TH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BURIRAM UTD <span>TH</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">BOX GAMING <span>VN</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TEAM FLASH <span>VN</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">RONIN ESPORTS <span>MM</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TEAM AVES <span>BD</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">TEAM TEKKEN <span>PK</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">RSG SINGAPORE <span>M4 CHAMPS</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">FNATIC <span>INTL</span></div><div class="ticker-sep">◆</div>
-    <div class="ticker-item">M6 WORLD CHAMPIONSHIP <span>LIVE NOW</span></div><div class="ticker-sep">◆</div>
-  </div>
-</div>
-
-<!-- TEAMS -->
-<section class="teams fade-in" id="teams">
-  <div class="section-header">
-    <div class="section-tag">Browse by Team</div>
-    <h2 class="section-title">CHOOSE YOUR <span class="accent">SQUAD</span></h2>
-  </div>
-  <!-- Region filter tabs -->
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;justify-content:center;" id="regionTabs">
-    <button class="filter-chip active" onclick="filterRegion('all',this)">🌏 All</button>
-    <button class="filter-chip" onclick="filterRegion('ph',this)">🇵🇭 MPL-PH</button>
-    <button class="filter-chip" onclick="filterRegion('id',this)">🇮🇩 MPL-ID</button>
-    <button class="filter-chip" onclick="filterRegion('my',this)">🇲🇾 MY/SG</button>
-    <button class="filter-chip" onclick="filterRegion('th',this)">🇹🇭 MPL-TH</button>
-    <button class="filter-chip" onclick="filterRegion('vn',this)">🇻🇳 MPL-VN</button>
-    <button class="filter-chip" onclick="filterRegion('mm',this)">🇲🇲 MPL-MM</button>
-    <button class="filter-chip" onclick="filterRegion('bd',this)">🇧🇩 MPL-BD</button>
-    <button class="filter-chip" onclick="filterRegion('pk',this)">🇵🇰 MPL-PK</button>
-    <button class="filter-chip" onclick="filterRegion('intl',this)">🌐 Intl</button>
-  </div>
-  <div class="teams-grid" id="teamsGrid">
-    <!-- 🇵🇭 MPL-PH -->
-    <div class="team-card" data-region="ph" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('ECHO')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200&q=80&fit=crop" alt="ECHO">
-      <div class="team-name">ECHO</div>
-      <div class="team-region">🇵🇭 MPL-PH · S12 Champions</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('ONIC')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=200&q=80&fit=crop" alt="ONIC PH">
-      <div class="team-name">ONIC PH</div>
-      <div class="team-region">🇵🇭 MPL-PH · Top 3 M6</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('Blacklist')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1542751110-a345b2a9c238?w=200&q=80&fit=crop" alt="Blacklist">
-      <div class="team-name">BLACKLIST</div>
-      <div class="team-region">🇵🇭 MPL-PH · 4x M-Series Champs</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(0,255,135,0.08);--team-accent:#00FF87;--team-shadow:rgba(0,255,135,0.2)" onclick="filterProducts('TNC')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1608188326523-a73a4282a462?w=200&q=80&fit=crop" alt="TNC">
-      <div class="team-name">TNC</div>
-      <div class="team-region">🇵🇭 MPL-PH · Veterans</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(255,100,0,0.08);--team-accent:#FF6400;--team-shadow:rgba(255,100,0,0.2)" onclick="filterProducts('Falcon')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=200&q=80&fit=crop" alt="Team Falcon">
-      <div class="team-name">TEAM FALCON</div>
-      <div class="team-region">🇵🇭 MPL-PH · Rising Squad</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(0,150,255,0.08);--team-accent:#0096FF;--team-shadow:rgba(0,150,255,0.2)" onclick="filterProducts('Smart Omega')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1640499900929-98b219e72a6b?w=200&q=80&fit=crop" alt="Smart Omega">
-      <div class="team-name">SMART OMEGA</div>
-      <div class="team-region">🇵🇭 MPL-PH · Comeback Kings</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(220,20,60,0.08);--team-accent:#DC143C;--team-shadow:rgba(220,20,60,0.2)" onclick="filterProducts('Nexplay')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=200&q=80&fit=crop" alt="Nexplay EVOS">
-      <div class="team-name">NEXPLAY EVOS</div>
-      <div class="team-region">🇵🇭 MPL-PH · Powerhouse</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="ph" style="--team-color:rgba(100,180,255,0.08);--team-accent:#64B4FF;--team-shadow:rgba(100,180,255,0.2)" onclick="filterProducts('Bren')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=200&q=80&fit=crop" alt="Bren Esports">
-      <div class="team-name">BREN ESPORTS</div>
-      <div class="team-region">🇵🇭 MPL-PH · M2 Champions</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇮🇩 MPL-ID -->
-    <div class="team-card" data-region="id" style="--team-color:rgba(139,92,246,0.08);--team-accent:#8B5CF6;--team-shadow:rgba(139,92,246,0.2)" onclick="filterProducts('RRQ')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1596473078-65a3e5f5e4ca?w=200&q=80&fit=crop" alt="RRQ">
-      <div class="team-name">RRQ HOSHI</div>
-      <div class="team-region">🇮🇩 MPL-ID · King of Kings</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="id" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('EVOS')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=200&q=80&fit=crop" alt="EVOS Legends">
-      <div class="team-name">EVOS LEGENDS</div>
-      <div class="team-region">🇮🇩 MPL-ID · Iconic Rivals</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="id" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('ONIC ID')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1604537372136-89b3dae196e3?w=200&q=80&fit=crop" alt="ONIC ID">
-      <div class="team-name">ONIC ESPORTS</div>
-      <div class="team-region">🇮🇩 MPL-ID · M5 Champions</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="id" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('Alter Ego')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&q=80&fit=crop" alt="Alter Ego">
-      <div class="team-name">ALTER EGO</div>
-      <div class="team-region">🇮🇩 MPL-ID · The Rebels</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="id" style="--team-color:rgba(0,200,100,0.08);--team-accent:#00C864;--team-shadow:rgba(0,200,100,0.2)" onclick="filterProducts('Aura')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1586182987320-4f376d39d787?w=200&q=80&fit=crop" alt="Aura Fire">
-      <div class="team-name">AURA FIRE</div>
-      <div class="team-region">🇮🇩 MPL-ID · Fan Favorites</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="id" style="--team-color:rgba(255,80,0,0.08);--team-accent:#FF5000;--team-shadow:rgba(255,80,0,0.2)" onclick="filterProducts('Bigetron')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1578307986969-e4ac4c4cae92?w=200&q=80&fit=crop" alt="Bigetron">
-      <div class="team-name">BIGETRON</div>
-      <div class="team-region">🇮🇩 MPL-ID · Alpha Squad</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="id" style="--team-color:rgba(180,0,255,0.08);--team-accent:#B400FF;--team-shadow:rgba(180,0,255,0.2)" onclick="filterProducts('Geek Fam ID')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&q=80&fit=crop" alt="Geek Fam ID">
-      <div class="team-name">GEEK FAM ID</div>
-      <div class="team-region">🇮🇩 MPL-ID · Global Org</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇲🇾 MPL-MY/SG -->
-    <div class="team-card" data-region="my" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('Todak')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=200&q=80&fit=crop" alt="Todak">
-      <div class="team-name">TODAK</div>
-      <div class="team-region">🇲🇾 MPL-MY/SG · M3 Champions</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="my" style="--team-color:rgba(0,180,255,0.08);--team-accent:#00B4FF;--team-shadow:rgba(0,180,255,0.2)" onclick="filterProducts('Geek Fam')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=200&q=80&fit=crop" alt="Geek Fam">
-      <div class="team-name">GEEK FAM</div>
-      <div class="team-region">🇲🇾 MPL-MY/SG · SEA Org</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="my" style="--team-color:rgba(255,0,100,0.08);--team-accent:#FF0064;--team-shadow:rgba(255,0,100,0.2)" onclick="filterProducts('RSG MY')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200&q=80&fit=crop" alt="RSG MY">
-      <div class="team-name">RSG MY</div>
-      <div class="team-region">🇲🇾 MPL-MY/SG · Rising Stars</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="my" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('Nova')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=200&q=80&fit=crop" alt="Nova Esports">
-      <div class="team-name">NOVA ESPORTS</div>
-      <div class="team-region">🇸🇬 MPL-MY/SG · Singapore</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="my" style="--team-color:rgba(139,92,246,0.08);--team-accent:#8B5CF6;--team-shadow:rgba(139,92,246,0.2)" onclick="filterProducts('Team HAQ')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=200&q=80&fit=crop" alt="Team HAQ">
-      <div class="team-name">TEAM HAQ</div>
-      <div class="team-region">🇲🇾 MPL-MY/SG · Contender</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇹🇭 MPL-TH -->
-    <div class="team-card" data-region="th" style="--team-color:rgba(0,180,100,0.08);--team-accent:#00B464;--team-shadow:rgba(0,180,100,0.2)" onclick="filterProducts('EVOS TH')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&q=80&fit=crop" alt="EVOS TH">
-      <div class="team-name">EVOS TH</div>
-      <div class="team-region">🇹🇭 MPL-TH · Dominant Force</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="th" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('Buriram')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1549399542-7e8ee8c3e5e1?w=200&q=80&fit=crop" alt="Buriram United">
-      <div class="team-name">BURIRAM UTD</div>
-      <div class="team-region">🇹🇭 MPL-TH · Sport Club Pride</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="th" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('RSG TH')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=200&q=80&fit=crop" alt="RSG TH">
-      <div class="team-name">RSG THAILAND</div>
-      <div class="team-region">🇹🇭 MPL-TH · SEA Org</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="th" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('Bacon Time')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1520950335585-0f7c2f58d481?w=200&q=80&fit=crop" alt="Bacon Time">
-      <div class="team-name">BACON TIME</div>
-      <div class="team-region">🇹🇭 MPL-TH · Fan Favorites</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇻🇳 MPL-VN -->
-    <div class="team-card" data-region="vn" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('Box Gaming')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1593642634315-48f5414c3ad9?w=200&q=80&fit=crop" alt="Box Gaming">
-      <div class="team-name">BOX GAMING</div>
-      <div class="team-region">🇻🇳 MPL-VN · Vietnam Kings</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="vn" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('Team Flash')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&q=80&fit=crop" alt="Team Flash">
-      <div class="team-name">TEAM FLASH</div>
-      <div class="team-region">🇻🇳 MPL-VN · Speed & Power</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="vn" style="--team-color:rgba(139,92,246,0.08);--team-accent:#8B5CF6;--team-shadow:rgba(139,92,246,0.2)" onclick="filterProducts('Saigon')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=200&q=80&fit=crop" alt="Saigon Phantom">
-      <div class="team-name">SAIGON PHANTOM</div>
-      <div class="team-region">🇻🇳 MPL-VN · Ghost Squad</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="vn" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('AIC VN')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1471897488648-5eae4ac6686b?w=200&q=80&fit=crop" alt="AIC VN">
-      <div class="team-name">AIC VIETNAM</div>
-      <div class="team-region">🇻🇳 MPL-VN · Elite Roster</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇲🇲 MPL-MM -->
-    <div class="team-card" data-region="mm" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('Ronin')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1519241047957-be31d7379a5d?w=200&q=80&fit=crop" alt="Ronin Esports">
-      <div class="team-name">RONIN ESPORTS</div>
-      <div class="team-region">🇲🇲 MPL-MM · Pioneers</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="mm" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('Impunity')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1563453392212-326f5e854473?w=200&q=80&fit=crop" alt="Impunity">
-      <div class="team-name">IMPUNITY MM</div>
-      <div class="team-region">🇲🇲 MPL-MM · Dark Horses</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="mm" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('Yangon')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&q=80&fit=crop" alt="Yangon GFC">
-      <div class="team-name">YANGON GFC</div>
-      <div class="team-region">🇲🇲 MPL-MM · Home Crowd</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇧🇩 MPL-BD -->
-    <div class="team-card" data-region="bd" style="--team-color:rgba(0,180,80,0.08);--team-accent:#00B450;--team-shadow:rgba(0,180,80,0.2)" onclick="filterProducts('Team AVES')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1524015368236-bbf1f1c1422d?w=200&q=80&fit=crop" alt="Team AVES">
-      <div class="team-name">TEAM AVES</div>
-      <div class="team-region">🇧🇩 MPL-BD · Bangladesh Pride</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="bd" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('Hydra BD')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&q=80&fit=crop" alt="Hydra BD">
-      <div class="team-name">HYDRA BD</div>
-      <div class="team-region">🇧🇩 MPL-BD · Rising Force</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🇵🇰 MPL-PK -->
-    <div class="team-card" data-region="pk" style="--team-color:rgba(0,212,255,0.08);--team-accent:#00D4FF;--team-shadow:rgba(0,212,255,0.2)" onclick="filterProducts('Team Tekken')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=200&q=80&fit=crop" alt="Team Tekken">
-      <div class="team-name">TEAM TEKKEN</div>
-      <div class="team-region">🇵🇰 MPL-PK · Pakistan's Best</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="pk" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('Titanium PK')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=200&q=80&fit=crop" alt="Titanium PK">
-      <div class="team-name">TITANIUM PK</div>
-      <div class="team-region">🇵🇰 MPL-PK · Contender</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <!-- 🌐 International -->
-    <div class="team-card" data-region="intl" style="--team-color:rgba(255,0,100,0.08);--team-accent:#FF0064;--team-shadow:rgba(255,0,100,0.2)" onclick="filterProducts('RSG SG')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1527525443983-6e60c75fff46?w=200&q=80&fit=crop" alt="RSG SG">
-      <div class="team-name">RSG SINGAPORE</div>
-      <div class="team-region">🌐 M4 World Champions</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="intl" style="--team-color:rgba(255,184,0,0.08);--team-accent:#FFB800;--team-shadow:rgba(255,184,0,0.2)" onclick="filterProducts('Blacklist Intl')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=200&q=80&fit=crop" alt="Blacklist Intl">
-      <div class="team-name">BLACKLIST INTL</div>
-      <div class="team-region">🌐 M-Series · 4-Peat Legends</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="intl" style="--team-color:rgba(255,59,92,0.08);--team-accent:#FF3B5C;--team-shadow:rgba(255,59,92,0.2)" onclick="filterProducts('Fnatic')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200&q=80&fit=crop" alt="Fnatic">
-      <div class="team-name">FNATIC</div>
-      <div class="team-region">🌐 International · Global Org</div>
-      <div class="team-count">Shop →</div>
-    </div>
-    <div class="team-card" data-region="intl" style="--team-color:rgba(139,92,246,0.08);--team-accent:#8B5CF6;--team-shadow:rgba(139,92,246,0.2)" onclick="filterProducts('Orange')">
-      <img class="team-logo" src="https://images.unsplash.com/photo-1542751110-a345b2a9c238?w=200&q=80&fit=crop" alt="Orange Esports">
-      <div class="team-name">ORANGE ESPORTS</div>
-      <div class="team-region">🌐 M-Series Qualifier</div>
-      <div class="team-count">Shop →</div>
-    </div>
-  </div>
-</section>
-
-<!-- PRODUCTS -->
-<section class="products" id="products">
-  <div class="section-header">
-    <div class="section-tag">Official Merchandise</div>
-    <h2 class="section-title">PRO PLAYER <span class="gold">JERSEYS</span></h2>
-  </div>
-  <div class="filters-bar">
-    <span class="filter-label">Filter:</span>
-    <button class="filter-chip active" data-filter="All">All</button>
-    <button class="filter-chip" data-filter="ECHO">ECHO</button>
-    <button class="filter-chip" data-filter="ONIC">ONIC PH</button>
-    <button class="filter-chip" data-filter="Blacklist">Blacklist</button>
-    <button class="filter-chip" data-filter="RRQ">RRQ</button>
-    <button class="filter-chip" data-filter="Hoodie">Hoodies</button>
-    <button class="filter-chip" data-filter="Sale">Sale</button>
-    <div class="filter-spacer"></div>
-    <select class="sort-select" id="sortSelect">
-      <option value="featured">Featured</option>
-      <option value="price-low">Price: Low to High</option>
-      <option value="price-high">Price: High to Low</option>
-      <option value="newest">Newest</option>
-    </select>
-  </div>
-  <div class="products-grid" id="productsGrid"></div>
-</section>
-
-<!-- BANNER -->
-<div class="banner fade-in">
-  <div class="banner-img">
-    <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=900&q=80&fit=crop" alt="Esports tournament">
-  </div>
-  <div class="banner-content">
-    <div class="banner-tag">Limited Edition Drop</div>
-    <h2 class="banner-title">
-      M6 WORLD CHAMPIONSHIP
-      <span class="highlight">COLLECTOR'S SET</span>
-    </h2>
-    <p class="banner-sub">Exclusive commemorative jerseys from the M6 World Championship. Each piece is numbered and comes with a certificate of authenticity. Only 500 sets worldwide.</p>
-    <button class="banner-cta" onclick="showToast('🏆 Collector Set drops Dec 1 — notifications on!')">GET NOTIFIED 🏆</button>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<section class="features fade-in">
-  <div class="features-grid">
-    <div class="feature-item">
-      <span class="feature-icon">⚡</span>
-      <div class="feature-title">100% Official</div>
-      <p class="feature-desc">Authenticated ML:BB licensed merchandise. Same design worn by pros on stage.</p>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">🚚</span>
-      <div class="feature-title">Fast Shipping PH</div>
-      <p class="feature-desc">Free shipping on orders ₱2000+. Metro Manila 1–2 days. Nationwide 3–5 days.</p>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">🔒</span>
-      <div class="feature-title">Secure Checkout</div>
-      <p class="feature-desc">GCash, Maya, credit card, COD. All transactions encrypted and protected.</p>
-    </div>
-    <div class="feature-item">
-      <span class="feature-icon">✦</span>
-      <div class="feature-title">Pro Quality</div>
-      <p class="feature-desc">Moisture-wicking polyester. Sublimation printing. Built to last and look sharp.</p>
-    </div>
-  </div>
-</section>
-
-<!-- NEWSLETTER -->
-<section class="newsletter fade-in">
-  <div class="section-tag">Join the Squad</div>
-  <h2 class="newsletter-title">GET FIRST ACCESS TO NEW DROPS</h2>
-  <p class="newsletter-sub">Be the first to know when new team jerseys drop. Exclusive codes for subscribers.</p>
-  <div class="newsletter-form">
-    <input class="newsletter-input" type="email" placeholder="Your email address" id="emailInput">
-    <button class="newsletter-btn" onclick="subscribeNewsletter()">JOIN ⚡</button>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
-    <div>
-      <div class="footer-logo">NEXUS GEAR</div>
-      <p class="footer-desc">The Philippines' #1 official Mobile Legends: Bang Bang pro player merchandise store. Authenticated. Licensed. Built for fans.</p>
-      <div class="footer-socials">
-        <a class="social-btn" href="#" title="Facebook">f</a>
-        <a class="social-btn" href="#" title="Instagram">ig</a>
-        <a class="social-btn" href="#" title="TikTok">tk</a>
-        <a class="social-btn" href="#" title="Discord">dc</a>
+    <!-- PRODUCTS TABLE -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">All Products</div>
+        <div class="filter-row" style="margin:0">
+          <button class="filter-chip active" onclick="applyFilter('all', this)">All</button>
+          <button class="filter-chip" onclick="applyFilter('jersey', this)">Jersey</button>
+          <button class="filter-chip" onclick="applyFilter('hoodie', this)">Hoodie</button>
+          <button class="filter-chip" onclick="applyFilter('sale', this)">Sale</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="productsTable">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Team</th>
+              <th>Player</th>
+              <th>Category</th>
+              <th>Badge</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsBody">
+            <tr class="loading-row"><td colspan="8"><span class="spinner"></span>Loading products...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
-    <div>
-      <div class="footer-col-title">Shop</div>
-      <ul class="footer-links">
-        <li><a href="#">All Jerseys</a></li>
-        <li><a href="#">Hoodies</a></li>
-        <li><a href="#">Accessories</a></li>
-        <li><a href="#">Collector Items</a></li>
-        <li><a href="#">Sale</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Teams</div>
-      <ul class="footer-links">
-        <li><a href="#">ECHO</a></li>
-        <li><a href="#">ONIC PH</a></li>
-        <li><a href="#">Blacklist Intl</a></li>
-        <li><a href="#">RRQ Hoshi</a></li>
-        <li><a href="#">All Teams</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Help</div>
-      <ul class="footer-links">
-        <li><a href="#">Size Chart</a></li>
-        <li><a href="#">Track Order</a></li>
-        <li><a href="#">Returns</a></li>
-        <li><a href="#">FAQ</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2025 NEXUS GEAR. Not affiliated with Moonton. Fan merchandise store.</span>
-    <div class="footer-payments">
-      <span class="payment-badge">GCash</span>
-      <span class="payment-badge">Maya</span>
-      <span class="payment-badge">Visa</span>
-      <span class="payment-badge">Mastercard</span>
-      <span class="payment-badge">COD</span>
-    </div>
-    <span>Privacy · Terms · Sitemap</span>
-  </div>
-</footer>
 
-<!-- CART -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-<div class="cart-sidebar" id="cartSidebar">
-  <div class="cart-header">
-    <div class="cart-title">⚡ Your Bag</div>
-    <button class="cart-close" onclick="closeCart()">✕ CLOSE</button>
-  </div>
-  <div class="cart-items" id="cartItems"></div>
-  <div class="cart-footer" id="cartFooter" style="display:none">
-    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">₱0</span></div>
-    <div class="cart-subtotal"><span>Shipping</span><span>Calculated at checkout</span></div>
-    <div class="cart-total">
-      <span class="cart-total-label">Total</span>
-      <span class="cart-total-value" id="cartTotal">₱0</span>
-    </div>
-    <button class="checkout-btn" onclick="showToast('Redirecting to checkout...')">⚡ CHECKOUT NOW</button>
-    <button class="continue-btn" onclick="closeCart()">Continue Shopping</button>
   </div>
 </div>
 
-<!-- QUICK VIEW MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
-    <div class="modal-img" id="modalImg"></div>
-    <div class="modal-info">
-      <div class="modal-team" id="modalTeam"></div>
-      <div class="modal-name" id="modalName"></div>
-      <div class="modal-player" id="modalPlayer"></div>
-      <div class="modal-price" id="modalPrice"></div>
-      <p class="modal-desc" id="modalDesc"></p>
-      <div class="modal-label">Select Size</div>
-      <div class="size-grid" id="sizeGrid"></div>
-      <div class="modal-label">Color Options</div>
-      <div class="product-colors" id="modalColors" style="margin-bottom:20px;gap:10px;"></div>
-      <button class="modal-add-btn" id="modalAddBtn">⚡ ADD TO BAG</button>
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add New Product</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-body">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input class="form-control" id="fName" placeholder="e.g. ECHO Home Jersey 2024">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Player *</label>
+          <input class="form-control" id="fPlayer" placeholder="e.g. Yawi">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Team *</label>
+          <select class="form-control" id="fTeam">
+            <option value="">— Select Team —</option>
+            <option>ECHO</option>
+            <option>ONIC</option>
+            <option>Blacklist</option>
+            <option>RRQ</option>
+            <option>Fnatic</option>
+            <option>Orange</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-control" id="fCategory">
+            <option value="">— Select Category —</option>
+            <option value="Jersey">Jersey</option>
+            <option value="Hoodie">Hoodie</option>
+            <option value="Accessories">Accessories</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Price (₱) *</label>
+          <input class="form-control" id="fPrice" type="number" placeholder="1299">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Original Price (₱) — for Sale</label>
+          <input class="form-control" id="fOriginalPrice" type="number" placeholder="Leave blank if not on sale">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Badge</label>
+          <select class="form-control" id="fBadge">
+            <option value="">None</option>
+            <option value="New">New</option>
+            <option value="Sale">Sale</option>
+            <option value="Limited">Limited</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Colors</label>
+          <div class="colors-row" id="colorsRow">
+            <button class="add-color-btn" onclick="addColor()" title="Add color">+</button>
+          </div>
+          <input type="color" id="colorPicker" style="display:none" onchange="pickColor(this.value)">
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" id="fDesc" placeholder="Official licensed jersey..."></textarea>
+        </div>
+
+        <!-- IMAGE -->
+        <div class="form-group full">
+          <label class="form-label">Product Image *</label>
+          <div class="img-tabs">
+            <div class="img-tab active" onclick="switchImgTab('url', this)">🔗 URL / ImageBB</div>
+            <div class="img-tab" onclick="switchImgTab('upload', this)">📁 Upload File</div>
+          </div>
+
+          <!-- URL TAB -->
+          <div id="imgTabUrl">
+            <div class="img-url-row">
+              <input class="form-control" id="fImgUrl" placeholder="https://i.ibb.co/... or any image URL" oninput="previewFromUrl(this.value)">
+              <button class="btn btn-ghost btn-sm" onclick="previewFromUrl(document.getElementById('fImgUrl').value)">Preview</button>
+            </div>
+          </div>
+
+          <!-- UPLOAD TAB -->
+          <div id="imgTabUpload" style="display:none">
+            <div class="img-upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondrop="dropFile(event)">
+              <input type="file" id="fileInput" accept="image/*" onchange="handleFileUpload(this.files[0])">
+              <img class="img-preview" id="imgPreview">
+              <div id="uploadPlaceholder">
+                <div class="img-upload-icon">📁</div>
+                <div class="img-upload-text">Click or drag & drop image</div>
+                <div class="img-upload-sub">PNG, JPG, WEBP — will use the file path as URL</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SHARED PREVIEW -->
+          <div style="margin-top:10px;display:flex;align-items:center;gap:10px" id="imgFinalPreviewWrap" style="display:none">
+            <img id="imgFinalPreview" style="width:60px;height:60px;object-fit:cover;object-position:top;border:1px solid var(--border-bright);display:none">
+            <span id="imgFinalPreviewLabel" style="font-size:12px;color:var(--text-muted);font-family:var(--font-ui)"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveProduct()">⚡ Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="confirm-modal">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title">Delete Product?</div>
+    <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
   </div>
 </div>
 
@@ -1893,296 +883,350 @@ footer {
 <div class="toast" id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────
-// API CONFIG — change this to your backend URL
-// ─────────────────────────────────────────
-// Add this line at the very beginning of your script
+const API_URL = 'https://my-endterm-project.vercel.app/api/products';    
 
 
-// ✅ NEW (Relative path)
-const API_BASE = '/api';
-const API_URL = '/api/products';
+let allProducts = [];
+let editingId = null;
+let productColors = [];
+let currentFilter = 'all';
+let currentSearch = '';
+let imgMode = 'url'; // 'url' or 'upload'
 
+// ── INIT ──
+loadProducts();
 
-let products = []; // populated from MongoDB via API
-let cart = [], wishlist = [], activeFilter = 'All', selectedSize = null, currentProduct = null;
-const sizes = ['XS','S','M','L','XL','XXL'];
-
-// ─────────────────────────────────────────
-// FETCH PRODUCTS FROM BACKEND
-// ─────────────────────────────────────────
-async function fetchProducts(filter = 'All', sort = 'featured') {
-  const grid = document.getElementById('productsGrid');
-
-  // Show loading skeleton immediately so there's no blank gap
-  grid.style.opacity = '1';
-  grid.innerHTML = Array(6).fill(0).map(() => `
-    <div class="product-card" style="pointer-events:none">
-      <div class="product-image-wrap" style="background:var(--bg-elevated);animation:pulse 1.4s ease-in-out infinite;min-height:280px;"></div>
-      <div class="product-info">
-        <div style="height:12px;background:var(--bg-elevated);border-radius:2px;margin-bottom:10px;animation:pulse 1.4s ease-in-out infinite;"></div>
-        <div style="height:16px;background:var(--bg-elevated);border-radius:2px;margin-bottom:8px;width:70%;animation:pulse 1.4s ease-in-out infinite;"></div>
-        <div style="height:12px;background:var(--bg-elevated);border-radius:2px;width:50%;animation:pulse 1.4s ease-in-out infinite;"></div>
-      </div>
-    </div>
-  `).join('');
-
+async function loadProducts() {
   try {
-    // Build query params
-    const params = new URLSearchParams();
-    if (filter === 'Hoodie') {
-      params.set('category', 'hoodie');
-    } else if (filter === 'Sale') {
-      params.set('badge', 'sale');
-    } else if (filter !== 'All') {
-      params.set('team', filter);
-    }
-    if (sort !== 'featured') params.set('sort', sort);
-
-    const res = await fetch(`${API_BASE}/products?${params}`);
-    const json = await res.json();
-
-    if (!json.success) throw new Error(json.message);
-
-    let items = json.data;
-
-    // Keep global products in sync for modal lookups
-    products = json.data;
-
-    renderGrid(items);
-  } catch (err) {
-    console.error('Failed to fetch products:', err);
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--red)">
-      <p style="font-family:var(--font-display);font-size:20px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">⚠ API Offline</p>
-      <p style="font-size:13px;color:var(--text-muted)">Make sure your backend server is running at ${API_BASE}</p>
-    </div>`;
-    grid.style.opacity = '1';
-  }
-}
-
-// ─────────────────────────────────────────
-// SEARCH VIA API
-// ─────────────────────────────────────────
-async function searchProducts(q) {
-  const grid = document.getElementById('productsGrid');
-  try {
-    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(q)}`);
+    const res = await fetch(`${API_BASE}/products`);
     const json = await res.json();
     if (!json.success) throw new Error(json.message);
-    renderGrid(json.data);
+    allProducts = json.data;
+    renderStats();
+    renderTable();
   } catch (err) {
-    console.error('Search failed:', err);
+    document.getElementById('productsBody').innerHTML =
+      `<tr class="loading-row"><td colspan="8" style="color:var(--red)">⚠ Failed to load — is the server running at ${API_BASE}?</td></tr>`;
   }
 }
 
-// ─────────────────────────────────────────
-// RENDER PRODUCT CARDS
-// (accepts an array of product objects from MongoDB — uses _id)
-// ─────────────────────────────────────────
-function renderGrid(items) {
-  const grid = document.getElementById('productsGrid');
-  grid.innerHTML = items.length ? items.map(p => `
-      <div class="product-card" data-id="${p._id}">
-        <div class="product-image-wrap">
-          <img src="${p.img.includes('<img src=') ? p.img.match(/src="([^"]+)"/)[1] : p.img}" alt="${p.name}" loading="lazy">
-
-          <div class="product-badges">
-            ${p.badge ? `<span class="badge badge-${p.badge.toLowerCase()}">${p.badge}</span>` : ''}
-          </div>
-          <div class="product-team-tag">${p.team}</div>
-          <div class="product-actions">
-            <button class="action-btn" onclick="toggleWishlist('${p._id}',event)" id="wish-${p._id}" title="Wishlist">♡</button>
-            <button class="action-btn" onclick="openModal('${p._id}',event)" title="Quick View">⊙</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <div class="product-team">${p.team} · Official Jersey</div>
-          <div class="product-name">${p.name}</div>
-          <div class="product-player">${p.player}</div>
-          <div class="product-colors">
-            ${p.colors.map(c => `<div class="color-dot" style="background:${c}" title="${c}"></div>`).join('')}
-          </div>
-          <div class="product-footer">
-            <div>
-              <span class="product-price">₱${p.price.toLocaleString()}</span>
-              ${p.originalPrice ? `<span class="product-price-original">₱${p.originalPrice.toLocaleString()}</span>` : ''}
-            </div>
-            <button class="add-to-cart-mini" onclick="addToCart('${p._id}',event)">ADD</button>
-          </div>
-        </div>
-      </div>
-    `).join('') : `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)"><p style="font-family:var(--font-display);font-size:24px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">No results</p><p style="font-size:13px">Try a different filter</p></div>`;
-  grid.style.opacity = '1';
-  updateWishlistIcons();
-  // Ensure parent section is visible (fade-in observer may have missed it)
-  document.getElementById('products').style.opacity = '1';
-  document.getElementById('products').style.transform = 'none';
+function renderStats() {
+  document.getElementById('statTotal').textContent = allProducts.length;
+  document.getElementById('statJerseys').textContent = allProducts.filter(p => p.category?.toLowerCase().includes('jersey')).length;
+  document.getElementById('statHoodies').textContent = allProducts.filter(p => p.category?.toLowerCase().includes('hoodie')).length;
+  document.getElementById('statSale').textContent = allProducts.filter(p => p.badge?.toLowerCase() === 'sale').length;
 }
 
-// Wrapper to keep filter button behavior working
-function renderProducts(filter = 'All', sort = 'featured') {
-  fetchProducts(filter, sort);
-}
-
-function addToCart(id, e) {
-  if(e) e.stopPropagation();
-  const p = products.find(x => x._id === id);
-  if(!p) return;
-  const ex = cart.find(i => i._id === id);
-  if(ex) ex.qty++;
-  else cart.push({...p, qty:1});
-  updateCart();
-  showToast(`✓ ${p.name} added to bag`);
-  const badge = document.getElementById('cartBadge');
-  badge.classList.remove('pop');
-  void badge.offsetWidth;
-  badge.classList.add('pop');
-}
-
-function updateCart() {
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const count = cart.reduce((s,i)=>s+i.qty,0);
-  const badge = document.getElementById('cartBadge');
-  badge.textContent = count;
-  badge.style.display = count>0 ? 'flex' : 'none';
-  document.getElementById('cartSubtotal').textContent = `₱${total.toLocaleString()}`;
-  document.getElementById('cartTotal').textContent = `₱${total.toLocaleString()}`;
-  const cartItemsEl = document.getElementById('cartItems');
-  const cartFooter = document.getElementById('cartFooter');
-  if(cart.length===0) {
-    cartFooter.style.display='none';
-    cartItemsEl.innerHTML=`<div class="cart-empty"><div class="cart-empty-icon">🎮</div><div class="cart-empty-text">Bag Empty</div><p style="font-size:12px;font-family:var(--font-ui);letter-spacing:0.06em;text-transform:uppercase">Add your fave team's jersey</p></div>`;
-  } else {
-    cartFooter.style.display='block';
-    cartItemsEl.innerHTML=cart.map(item=>`
-      <div class="cart-item">
-        <div class="cart-item-img"><img src="${item.img && item.img.includes('<img src=') ? item.img.match(/src="([^"]+)"/)[1] : item.img}" alt="${item.name}"></div>
-        <div class="cart-item-details">
-          <div class="cart-item-team">${item.team}</div>
-          <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-variant">Size: M · Official</div>
-          <div class="cart-item-qty">
-            <button class="qty-btn" onclick="changeQty('${item._id}',-1)">−</button>
-            <span class="qty-num">${item.qty}</span>
-            <button class="qty-btn" onclick="changeQty('${item._id}',1)">+</button>
-          </div>
-        </div>
-        <div class="cart-item-right">
-          <div class="cart-item-price">₱${(item.price*item.qty).toLocaleString()}</div>
-          <button class="cart-remove" onclick="removeFromCart('${item._id}')">REMOVE</button>
-        </div>
-      </div>
-    `).join('');
+function getImgUrl(img) {
+  if (!img) return '';
+  if (img.includes('<img src=')) {
+    const m = img.match(/src="([^"]+)"/);
+    return m ? m[1] : '';
   }
+  return img;
 }
 
-function changeQty(id,delta) {
-  const item = cart.find(i=>i._id===id);
-  if(!item) return;
-  item.qty+=delta;
-  if(item.qty<=0) cart=cart.filter(i=>i._id!==id);
-  updateCart();
-}
-function removeFromCart(id) { cart=cart.filter(i=>i._id!==id); updateCart(); }
-function openCart() { document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartSidebar').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.body.style.overflow=''; }
+function renderTable() {
+  const tbody = document.getElementById('productsBody');
+  let items = [...allProducts];
 
-function toggleWishlist(id,e) {
-  if(e) e.stopPropagation();
-  const idx=wishlist.indexOf(id);
-  if(idx>-1) { wishlist.splice(idx,1); showToast('Removed from wishlist'); }
-  else { wishlist.push(id); showToast('♡ Added to wishlist'); }
-  updateWishlistIcons();
-}
-function updateWishlistIcons() {
-  products.forEach(p=>{ const btn=document.getElementById(`wish-${p._id}`); if(btn) btn.style.color=wishlist.includes(p._id)?'#FF3B5C':''; });
-}
+  // Filter
+  if (currentFilter === 'jersey') items = items.filter(p => p.category?.toLowerCase().includes('jersey'));
+  else if (currentFilter === 'hoodie') items = items.filter(p => p.category?.toLowerCase().includes('hoodie'));
+  else if (currentFilter === 'sale') items = items.filter(p => p.badge?.toLowerCase() === 'sale');
 
-function openModal(id,e) {
-  if(e) e.stopPropagation();
-  const p=products.find(x=>x._id===id);
-  if(!p) return;
-  currentProduct=p; selectedSize=null;
-  document.getElementById('modalImg').innerHTML=`<img src="${p.img && p.img.includes('<img src=') ? p.img.match(/src="([^"]+)"/)[1] : p.img}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;object-position:top;display:block;">`;
-  document.getElementById('modalTeam').textContent=`${p.team} · Official Merchandise`;
-  document.getElementById('modalName').textContent=p.name;
-  document.getElementById('modalPlayer').textContent=p.player;
-  document.getElementById('modalPrice').textContent=`₱${p.price.toLocaleString()}${p.originalPrice?` · Was ₱${p.originalPrice.toLocaleString()}`:''}`;
-  document.getElementById('modalDesc').textContent=p.desc;
-  document.getElementById('sizeGrid').innerHTML=sizes.map(s=>`<button class="size-btn" onclick="selectSize('${s}',this)">${s}</button>`).join('');
-  document.getElementById('modalColors').innerHTML=p.colors.map(c=>`<div class="color-dot" style="background:${c};width:20px;height:20px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)" title="${c}"></div>`).join('');
-  document.getElementById('modalAddBtn').onclick=()=>{ addToCart(p._id); closeModal(); };
-  document.getElementById('modalOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function selectSize(size,btn) {
-  selectedSize=size;
-  document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('selected'));
-  btn.classList.add('selected');
-}
-function closeModal(e) {
-  if(e && e.target!==document.getElementById('modalOverlay')) return;
-  document.getElementById('modalOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
+  // Search
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    items = items.filter(p =>
+      p.name?.toLowerCase().includes(q) ||
+      p.team?.toLowerCase().includes(q) ||
+      p.player?.toLowerCase().includes(q) ||
+      p.category?.toLowerCase().includes(q)
+    );
+  }
 
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
-}
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No Products Found</div><div class="empty-sub">Try a different filter or add a new product.</div></div></td></tr>`;
+    return;
+  }
 
-function filterRegion(region, btn) {
-  document.querySelectorAll('#teamsGrid .team-card').forEach(card => {
-    card.style.display = (region === 'all' || card.dataset.region === region) ? '' : 'none';
-  });
-  document.querySelectorAll('#regionTabs .filter-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  tbody.innerHTML = items.map(p => {
+    const imgUrl = getImgUrl(p.img);
+    const badgeClass = p.badge ? `badge-${p.badge.toLowerCase()}` : 'badge-none';
+    const badgeText = p.badge || 'None';
+    const catClass = p.category?.toLowerCase().includes('hoodie') ? 'badge-hoodie' : 'badge-jersey';
+
+    return `
+      <tr>
+        <td>
+          ${imgUrl
+            ? `<img class="product-thumb" src="${imgUrl}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''
+          }
+          <div class="product-thumb-placeholder" ${imgUrl ? 'style="display:none"' : ''}>🎮</div>
+        </td>
+        <td class="td-name">${p.name || '—'}</td>
+        <td>${p.team || '—'}</td>
+        <td>${p.player || '—'}</td>
+        <td><span class="badge ${catClass}">${p.category || '—'}</span></td>
+        <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+        <td class="td-price">₱${(p.price || 0).toLocaleString()}</td>
+        <td>
+          <div class="td-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openEditModal('${p._id}')">✏ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDelete('${p._id}', '${(p.name || '').replace(/'/g, "\\'")}')">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
-function filterProducts(f) {
-  activeFilter=f;
-  document.querySelectorAll('.filter-chip').forEach(btn=>btn.classList.toggle('active',btn.dataset.filter===f));
-  renderProducts(f, document.getElementById('sortSelect').value);
-  scrollToSection('products');
-}
-function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'}); }
-function subscribeNewsletter() {
-  const email=document.getElementById('emailInput').value;
-  if(!email||!email.includes('@')) { showToast('⚠ Enter a valid email'); return; }
-  showToast('⚡ You\'re in the squad! Watch your inbox.');
-  document.getElementById('emailInput').value='';
-}
-
-document.querySelectorAll('.filter-chip').forEach(btn=>btn.addEventListener('click',()=>filterProducts(btn.dataset.filter)));
-document.getElementById('sortSelect').addEventListener('change',e=>renderProducts(activeFilter,e.target.value));
-document.getElementById('cartBtn').addEventListener('click',openCart);
-document.getElementById('hamburger').addEventListener('click',()=>{ document.getElementById('mobileMenu').classList.add('open'); document.body.style.overflow='hidden'; });
-document.getElementById('mobileMenuClose').addEventListener('click',()=>{ document.getElementById('mobileMenu').classList.remove('open'); document.body.style.overflow=''; });
-document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>{ document.getElementById('mobileMenu').classList.remove('open'); document.body.style.overflow=''; }));
-
-let searchTimer = null;
-document.getElementById('searchInput').addEventListener('input', e => {
-  const q = e.target.value.trim();
+// ── SEARCH & FILTER ──
+let searchTimer;
+function handleSearch(val) {
   clearTimeout(searchTimer);
-  if (!q) { renderProducts(activeFilter); return; }
-  // Debounce: wait 300ms after user stops typing before hitting the API
   searchTimer = setTimeout(() => {
-    searchProducts(q);
-    scrollToSection('products');
-  }, 300);
+    currentSearch = val.trim();
+    renderTable();
+  }, 250);
+}
+
+function applyFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+// ── MODAL ──
+function openAddModal() {
+  editingId = null;
+  productColors = [];
+  document.getElementById('modalTitle').textContent = 'Add New Product';
+  document.getElementById('saveBtn').textContent = '⚡ Save Product';
+  clearForm();
+  document.getElementById('productModal').classList.add('open');
+}
+
+function openEditModal(id) {
+  const p = allProducts.find(x => x._id === id);
+  if (!p) return;
+  editingId = id;
+  productColors = [...(p.colors || [])];
+
+  document.getElementById('modalTitle').textContent = 'Edit Product';
+  document.getElementById('saveBtn').textContent = '⚡ Update Product';
+
+  document.getElementById('fName').value = p.name || '';
+  document.getElementById('fPlayer').value = p.player || '';
+  document.getElementById('fTeam').value = p.team || '';
+  document.getElementById('fCategory').value = p.category || '';
+  document.getElementById('fPrice').value = p.price || '';
+  document.getElementById('fOriginalPrice').value = p.originalPrice || '';
+  document.getElementById('fBadge').value = p.badge || '';
+  document.getElementById('fDesc').value = p.desc || '';
+
+  const imgUrl = getImgUrl(p.img);
+  document.getElementById('fImgUrl').value = imgUrl;
+  previewFromUrl(imgUrl);
+
+  renderColors();
+  document.getElementById('productModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.remove('open');
+  editingId = null;
+}
+
+function clearForm() {
+  ['fName','fPlayer','fTeam','fCategory','fPrice','fOriginalPrice','fBadge','fDesc','fImgUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  productColors = [];
+  renderColors();
+  document.getElementById('imgFinalPreview').style.display = 'none';
+  document.getElementById('imgFinalPreviewLabel').textContent = '';
+}
+
+// ── IMAGE TABS ──
+function switchImgTab(mode, btn) {
+  imgMode = mode;
+  document.querySelectorAll('.img-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('imgTabUrl').style.display = mode === 'url' ? '' : 'none';
+  document.getElementById('imgTabUpload').style.display = mode === 'upload' ? '' : 'none';
+}
+
+function previewFromUrl(url) {
+  const preview = document.getElementById('imgFinalPreview');
+  const label = document.getElementById('imgFinalPreviewLabel');
+  if (url && url.startsWith('http')) {
+    preview.src = url;
+    preview.style.display = 'block';
+    label.textContent = '✓ Image URL set';
+    label.style.color = 'var(--green)';
+  } else {
+    preview.style.display = 'none';
+    label.textContent = '';
+  }
+}
+
+function handleFileUpload(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    document.getElementById('imgPreview').src = dataUrl;
+    document.getElementById('imgPreview').classList.add('visible');
+    document.getElementById('uploadPlaceholder').style.display = 'none';
+    document.getElementById('uploadArea').classList.add('has-img');
+    // Use data URL as img value for preview; in production you'd upload to ImageBB
+    document.getElementById('fImgUrl').value = dataUrl;
+    previewFromUrl(dataUrl);
+    showToast('Image loaded — paste an ImageBB URL for production use', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function dragOver(e) { e.preventDefault(); document.getElementById('uploadArea').style.borderColor = 'var(--cyan)'; }
+function dropFile(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleFileUpload(file);
+}
+
+// ── COLORS ──
+function addColor() {
+  document.getElementById('colorPicker').click();
+}
+function pickColor(hex) {
+  if (!productColors.includes(hex)) {
+    productColors.push(hex);
+    renderColors();
+  }
+}
+function removeColor(idx) {
+  productColors.splice(idx, 1);
+  renderColors();
+}
+function renderColors() {
+  const row = document.getElementById('colorsRow');
+  row.innerHTML = productColors.map((c, i) => `
+    <div class="color-chip" style="background:${c}" title="${c}">
+      <div class="remove-color" onclick="removeColor(${i})">✕</div>
+    </div>
+  `).join('') + `<button class="add-color-btn" onclick="addColor()" title="Add color">+</button>`;
+}
+
+// ── SAVE ──
+async function saveProduct() {
+  const name = document.getElementById('fName').value.trim();
+  const player = document.getElementById('fPlayer').value.trim();
+  const team = document.getElementById('fTeam').value;
+  const category = document.getElementById('fCategory').value;
+  const price = parseFloat(document.getElementById('fPrice').value);
+  const img = document.getElementById('fImgUrl').value.trim();
+
+  if (!name || !team || !category || !price || !img) {
+    showToast('⚠ Fill in all required fields (Name, Team, Category, Price, Image)', 'error');
+    return;
+  }
+
+  const payload = {
+    name,
+    player,
+    team,
+    category,
+    price,
+    img,
+    desc: document.getElementById('fDesc').value.trim(),
+    badge: document.getElementById('fBadge').value || null,
+    originalPrice: parseFloat(document.getElementById('fOriginalPrice').value) || null,
+    colors: productColors,
+  };
+
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+
+  try {
+    const url = editingId ? `${API_BASE}/products/${editingId}` : `${API_BASE}/products`;
+    const method = editingId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+
+    showToast(editingId ? '✓ Product updated!' : '✓ Product added!', 'success');
+    closeModal();
+    await loadProducts();
+  } catch (err) {
+    showToast('⚠ Error: ' + err.message, 'error');
+  } finally {
+    btn.textContent = editingId ? '⚡ Update Product' : '⚡ Save Product';
+    btn.disabled = false;
+  }
+}
+
+// ── DELETE ──
+let pendingDeleteId = null;
+function confirmDelete(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('confirmMsg').textContent = `Delete "${name}"? This cannot be undone.`;
+  document.getElementById('confirmDeleteBtn').onclick = () => deleteProduct(id);
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('open');
+  pendingDeleteId = null;
+}
+async function deleteProduct(id) {
+  try {
+    const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+    showToast('🗑 Product deleted', 'success');
+    closeConfirm();
+    await loadProducts();
+  } catch (err) {
+    showToast('⚠ Delete failed: ' + err.message, 'error');
+  }
+}
+
+// ── UI HELPERS ──
+function switchView(name, el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('topbarSection').textContent = name === 'add' ? 'Add Product' : 'Products';
+  if (name === 'add') openAddModal();
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeConfirm(); }
 });
 
-const observer = new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); }),{threshold:0.1});
-document.querySelectorAll('.fade-in').forEach(el=>observer.observe(el));
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeCart();closeModal();} });
-
-// ─────────────────────────────────────────
-// INIT — load products from MongoDB on page load
-// ─────────────────────────────────────────
-renderProducts();
-updateCart();
+document.getElementById('confirmModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirmModal')) closeConfirm();
+});
+document.getElementById('productModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('productModal')) closeModal();
+});
 </script>
 </body>
 </html>
