@@ -5,60 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEXUS GEAR — Admin Panel</title>
 
-<!-- ═══════════════════════════════════════════════════
-     AUTH GUARD — must match SECRET_KEY in login.php
-     Change NEXUS_SECRET and PHP_LOGIN_URL before deploy
+<!-- ══════════════════════════════
      ═══════════════════════════════════════════════════ -->
 <script>
 (function () {
-  const NEXUS_SECRET  = 'nx_s3cr3t_k3y_!ch4nge_me!';
   const PHP_LOGIN_URL = 'https://endterm.infinityfreeapp.com/login.php';
-  const TOKEN_KEY     = 'nexus_admin_token';
+  const TOKEN_KEY = 'nexus_admin_token';
 
-  async function verifyToken(token) {
-    if (!token) return false;
-    try {
-      const pipeIndex = token.indexOf('|');
-      if (pipeIndex === -1) return false;
-      const sig     = token.substring(0, pipeIndex);
-      const payload = token.substring(pipeIndex + 1);
-      if (!sig || !payload) return false;
-      const decoded = JSON.parse(atob(payload));
-      if (!decoded.exp || Math.floor(Date.now() / 1000) > decoded.exp) return false;
-      const enc = new TextEncoder();
-      const key = await crypto.subtle.importKey('raw', enc.encode(NEXUS_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-      const mac = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
-      const hex = Array.from(new Uint8Array(mac)).map(b => b.toString(16).padStart(2, '0')).join('');
-      return hex === sig;
-    } catch (err) { return false; }
-  }
-
-  async function init() {
+  function init() {
     const overlay = document.getElementById('authOverlay');
     if (overlay) overlay.style.display = 'flex';
 
-    const params   = new URLSearchParams(window.location.search);
+    // get token from URL or storage
+    const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
-    if (urlToken) {
-      const valid = await verifyToken(urlToken);
-      if (valid) {
-        sessionStorage.setItem(TOKEN_KEY, urlToken);
-        window.history.replaceState({}, '', window.location.pathname);
-        if (overlay) overlay.style.display = 'none'; // ✅ hide here
-        return;
-      }
-    }
-
     const storedToken = sessionStorage.getItem(TOKEN_KEY);
-    if (storedToken) {
-      const valid = await verifyToken(storedToken);
-      if (valid) {
-        if (overlay) overlay.style.display = 'none'; // ✅ hide here
-        return;
-      }
-      sessionStorage.removeItem(TOKEN_KEY);
+
+    const token = urlToken || storedToken;
+
+    if (token) {
+      sessionStorage.setItem(TOKEN_KEY, token);
+
+      // clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+
+      if (overlay) overlay.style.display = 'none';
+      return;
     }
 
+    // no token → redirect to login
     window.location.href = PHP_LOGIN_URL;
   }
 
