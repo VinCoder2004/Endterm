@@ -11,8 +11,8 @@
      ═══════════════════════════════════════════════════ -->
 <script>
 (function () {
-  const NEXUS_SECRET  = 'nx_s3cr3t_k3y_!ch4nge_me!';
-  const PHP_LOGIN_URL = 'https://endterm.infinityfreeapp.com/login.php'; // ← change this
+  const NEXUS_SECRET    = 'nx_s3cr3t_k3y_!ch4nge_me!'; // must match login.php
+  const PHP_LOGIN_URL   = 'https://endterm.infinityfreeapp.com/login.php'; // ← update this
   const TOKEN_KEY       = 'nexus_admin_token';
   const TOKEN_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
 
@@ -21,20 +21,40 @@
   // token = hmac(payload) + "." + payload
   // payload = base64(json{user, exp, sig})
   async function verifyToken(token) {
-    if (!token || !token.includes('.')) return false;
-    const [sig, payload] = token.split('.');
-    if (!sig || !payload) return false;
+    if (!token) return false;
     try {
+      // Use | as separator — avoids conflict with base64 dots
+      const pipeIndex = token.indexOf('|');
+      if (pipeIndex === -1) return false;
+      const sig     = token.substring(0, pipeIndex);
+      const payload = token.substring(pipeIndex + 1);
+      if (!sig || !payload) return false;
+
       const decoded = JSON.parse(atob(payload));
+
       // Check expiry
-      if (!decoded.exp || Date.now() / 1000 > decoded.exp) return false;
+      if (!decoded.exp || Math.floor(Date.now() / 1000) > decoded.exp) {
+        console.warn('Token expired');
+        return false;
+      }
+
       // Verify HMAC
-      const enc  = new TextEncoder();
-      const key  = await crypto.subtle.importKey('raw', enc.encode(NEXUS_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-      const mac  = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
-      const hex  = Array.from(new Uint8Array(mac)).map(b => b.toString(16).padStart(2,'0')).join('');
+      const enc = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw', enc.encode(NEXUS_SECRET),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false, ['sign']
+      );
+      const mac = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
+      const hex = Array.from(new Uint8Array(mac))
+                      .map(b => b.toString(16).padStart(2, '0')).join('');
+
+      console.log('Token valid:', hex === sig);
       return hex === sig;
-    } catch { return false; }
+    } catch (err) {
+      console.error('Token verify error:', err);
+      return false;
+    }
   }
 
   async function init() {
@@ -740,7 +760,7 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 // ─────────────────────────────────────────
 // LOGOUT — clears token and redirects to PHP login
 // ─────────────────────────────────────────
-const PHP_LOGIN_URL = 'http://endterm.infinityfreeapp.com/login.php'; // ← same as auth guard above
+const PHP_LOGIN_URL = 'https://endterm.infinityfreeapp.com/login.php'; // ← same as auth guard above
 
 function adminLogout() {
   sessionStorage.removeItem('nexus_admin_token');
